@@ -3,19 +3,56 @@ import DeliveryForm from "../components/checkout/DeliveryForm";
 import CartTotals from "../components/checkout/CartTotals";
 
 const Checkout = () => {
-  const { state } = useLocation(); 
+  const { state } = useLocation();
   const navigate = useNavigate();
 
   // 🛡️ Safety: agar direct /checkout open ho jaye
   const subtotal = state?.subtotal || 0;
   const total = state?.total || 0;
 
-  // (optional) final place order
-  const handleFinalOrder = () => {
-    console.log("Final Payable Amount:", total);
+  // ✅ UPDATED: Place order → backend → cashfree
+  const handleFinalOrder = async () => {
+    try {
+      console.log("Final Payable Amount:", total);
 
-    // yahan future me API / payment call hogi
-    alert(`Order placed for ₹ ${total}`);
+      // ⚠️ yahan tum apna real data plug kar sakti ho
+      const customer = {
+        customer_name: "Guest User",       // baad me auth se aayega
+        customer_email: "guest@gmail.com",
+        customer_phone: "9999999999",
+      };
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/orders/create`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: state?.items || [],     // cart items
+            amount: total,
+            customer,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert("Order creation failed");
+        return;
+      }
+
+      // 🔥 OPEN CASHFREE HOSTED PAYMENT PAGE
+      const cashfree = new window.Cashfree();
+      cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: "_self",
+      });
+
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -38,7 +75,7 @@ const Checkout = () => {
         .checkout-bg * {
           animation: none !important;
           transform: none !important;
-          }
+        }
 
         @media (max-width: 900px) {
           .checkout-grid {
