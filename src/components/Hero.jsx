@@ -47,7 +47,7 @@ const Hero = () => {
           <div className="hero-row">
             {/* LEFT */}
             <div className="hero-left">
-              <span className="hero-badge">🌿 FARMER’S BRAND</span>
+              <span className="hero-badge">A FARMER’S BRAND</span>
               <h1>{slides[current].title}</h1>
               <p>{slides[current].desc}</p>
               <button onClick={() => navigate("/collection")}>
