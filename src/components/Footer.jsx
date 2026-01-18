@@ -198,10 +198,10 @@ const Footer = () => {
             </p>
 
             <div className="social-icons">
-              <a href="#"><FaInstagram /></a>
-              <a href="#"><FaYoutube /></a>
-              <a href="#"><FaWhatsapp /></a>
-              <a href="#"><FaLinkedinIn /></a>
+              <a href="https://www.instagram.com/kongdoon_saffron?igsh=eWtsdXE1ZXNxZjRo"><FaInstagram /></a>
+              <a href="https://youtube.com/@kongdoon?si=jKdEPxO15RTlNDHa"><FaYoutube /></a>
+              <a href="https://wa.me/918169045778"><FaWhatsapp /></a>
+              <a href="https://www.linkedin.com/company/kongdoon/"><FaLinkedinIn /></a>
             </div>
           </div>
 
