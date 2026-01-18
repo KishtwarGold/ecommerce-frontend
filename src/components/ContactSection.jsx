@@ -1,4 +1,12 @@
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaPhoneAlt,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaInstagram,
+  FaYoutube,
+  FaWhatsapp,
+  FaLinkedin,
+} from "react-icons/fa";
 import { useState } from "react";
 
 const BRAND_RED = "#b1120b";
@@ -21,19 +29,34 @@ const ContactSection = () => {
         {/* GRID */}
         <div className="contact-grid">
 
+          {/* RIGHT FORM */}
+          <div className="contact-form animate-right">
+            <h4>
+              Send a Message <span>(We reply fast)</span>
+            </h4>
+
+            <form>
+              <label>Name</label>
+              <input type="text" placeholder="Your Name" />
+
+              <label>Email</label>
+              <input type="email" placeholder="Your Email" />
+
+              <label>Message</label>
+              <textarea rows="4" placeholder="How can we help you?" />
+
+              <button type="submit">Send Message</button>
+            </form>
+          </div>
+
           {/* LEFT */}
           <div className="contact-left animate-left">
-            <img
-              src="https://images.unsplash.com/photo-1525182008055-f88b95ff7980"
-              alt="Contact Kongdoon"
-              className="contact-image"
-            />
 
             <div className="info-card animate-up">
               <FaPhoneAlt />
               <div>
                 <h6>Call Us</h6>
-                <p>+91 98765 43210</p>
+                <p>+91 81690 45778</p>
               </div>
             </div>
 
@@ -52,30 +75,20 @@ const ContactSection = () => {
                 <p>Kishtwar, Jammu & Kashmir</p>
               </div>
             </div>
+
+            {/* FOLLOW US */}
+            <div className="info-card animate-up delay-3 follow-card">
+              <div className="follow-content">
+                <h6>Follow Us</h6>
+                <div className="social-icons">
+                  <a href="#" aria-label="Instagram"><FaInstagram /></a>
+                  <a href="#" aria-label="YouTube"><FaYoutube /></a>
+                  <a href="#" aria-label="WhatsApp"><FaWhatsapp /></a>
+                  <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* RIGHT FORM */}
-          <div className="contact-form animate-right">
-            <h4>
-              Send a Message <span>(We reply fast)</span>
-            </h4>
-
-            <form>
-              <label>Name</label>
-              <input type="text" placeholder="Your Name" />
-
-              <label>Email</label>
-              <input type="email" placeholder="Your Email" />
-
-              <label>Message</label>
-              <textarea rows="4" placeholder="How can we help you?" />
-
-              <button type="submit">
-                Send Message
-              </button>
-            </form>
-          </div>
-
         </div>
       </div>
 
@@ -118,14 +131,7 @@ const ContactSection = () => {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 60px;
-          align-items: start; /* important */
-        }
-
-        .contact-image {
-          width: 100%;
-          border-radius: 18px;
-          box-shadow: 0 22px 50px rgba(0,0,0,0.18);
-          margin-bottom: 28px;
+          align-items: start;
         }
 
         .info-card {
@@ -141,16 +147,19 @@ const ContactSection = () => {
 
         .info-card svg {
           color: ${BRAND_RED};
+          font-size: 18px;
+          flex-shrink: 0;
         }
 
-        /* 🔥 MAIN FIX IS HERE */
+        .info-card h6 {
+          margin-bottom: 4px;
+        }
+
         .contact-form {
           padding: 36px;
           border-radius: 18px;
           box-shadow: 0 26px 60px rgba(0,0,0,0.12);
           background: #ffffff;
-
-          /* STOP GRID STRETCH */
           align-self: flex-start;
         }
 
@@ -189,6 +198,37 @@ const ContactSection = () => {
           color: white;
           border: none;
           cursor: pointer;
+        }
+
+        /* FOLLOW CARD */
+        .follow-card {
+          align-items: flex-start;
+        }
+
+        .follow-content h6 {
+          margin-bottom: 10px;
+        }
+
+        /* ✅ FINAL SOCIAL ICON FIX */
+        .social-icons {
+          display: flex;
+          gap: 22px;
+        }
+
+        .social-icons a,
+        .social-icons a:hover,
+        .social-icons a:focus,
+        .social-icons a:active {
+          background: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
+          text-decoration: none !important;
+          color: ${BRAND_RED};
+        }
+
+        .social-icons svg {
+          font-size: 30px;
+          line-height: 1;
         }
 
         /* Animations */

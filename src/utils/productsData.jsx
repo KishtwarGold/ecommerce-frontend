@@ -16,7 +16,7 @@ export const products = [
     productType: "Saffron",
     category: "Exclusive Collection",
     weight: "10g",
-    price: 899,
+    price: 8999,
     image: saffronimg1,
     description: [
       "A total of 10 grams of premium-grade saffron sourced from our Exclusive Collection, known for its deep color and rich aroma.",
@@ -30,7 +30,7 @@ export const products = [
     productType: "Saffron",
     category: "Exclusive Collection",
     weight: "5g",
-    price: 499,
+    price: 4999,
     image: saffronimg2,
     description: [
       "This pack contains a total of 5 grams of high-quality saffron, perfectly measured for moderate household usage.",
@@ -58,7 +58,7 @@ export const products = [
     productType: "Saffron",
     category: "Premium Collection",
     weight: "2g",
-    price: 50,
+    price: 950,
     image: saffronimg3,
     description: [
       "This pack includes 2 grams of premium saffron, ideal for light usage or first-time buyers.",

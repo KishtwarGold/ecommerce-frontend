@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { products } from "../utils/productsData";
+import Collections from "../pages/Collection";
 
 const LatestCollections = () => {
   const [columns, setColumns] = useState(4);
   const sectionRef = useRef(null);
+  const cardsRef = useRef([]); // 🔥 ADDED (animation only)
   const navigate = useNavigate();
+
+  /* 🔹 ONLY 2 SAFFRON + 2 WALNUT PRODUCTS */
+  const featuredProducts = [
+    ...products.filter((p) => p.productType === "Saffron").slice(0, 2),
+    ...products.filter((p) => p.productType === "Walnuts").slice(0, 2),
+  ];
 
   /* RESPONSIVE COLUMNS */
   useEffect(() => {
@@ -34,6 +42,27 @@ const LatestCollections = () => {
     return () => observer.disconnect();
   }, []);
 
+  /* 🔥 CARD SCROLL ANIMATION (ADDED ONLY) */
+  useEffect(() => {
+    const cardObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("card-show");
+            cardObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    cardsRef.current.forEach((card) => {
+      if (card) cardObserver.observe(card);
+    });
+
+    return () => cardObserver.disconnect();
+  }, []);
+
   return (
     <>
       <style>{`
@@ -45,6 +74,17 @@ const LatestCollections = () => {
         .fade-section.show {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        /* 🔥 CARD ENTRY ANIMATION (ADDED ONLY) */
+        .card-hidden {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        .card-show {
+          opacity: 1;
+          transform: translateY(0);
+          transition: opacity 0.7s ease, transform 0.7s ease;
         }
 
         .card-animate {
@@ -73,6 +113,7 @@ const LatestCollections = () => {
 
       <section ref={sectionRef} className="fade-section" style={styles.section}>
         <div style={styles.container}>
+          {/* HEADING */}
           <div style={styles.headingWrap}>
             <h2 style={styles.heading}>
               Featured <span style={styles.headingAccent}>Collections</span>
@@ -82,14 +123,23 @@ const LatestCollections = () => {
             </p>
           </div>
 
+          {/* PRODUCTS GRID */}
           <div
             style={{
               ...styles.grid,
               gridTemplateColumns: `repeat(${columns}, 1fr)`,
             }}
           >
-            {products.map((item) => (
-              <div key={item.id} className="card-animate" style={styles.card}>
+            {featuredProducts.map((item, index) => (
+              <div
+                key={item.id}
+                ref={(el) => (cardsRef.current[index] = el)} // 🔥 ADDED
+                className="card-animate card-hidden"        // 🔥 ADDED
+                style={{
+                  ...styles.card,
+                  transitionDelay: `${index * 0.15}s`,     // 🔥 stagger
+                }}
+              >
                 <div
                   className="img-animate"
                   style={{
@@ -116,6 +166,24 @@ const LatestCollections = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* VIEW ALL BUTTON */}
+          <div style={{ textAlign: "center", marginTop: "32px" }}>
+            <button
+              onClick={() => navigate("/collection")}
+              style={{
+                padding: "12px 32px",
+                borderRadius: "30px",
+                border: "1px solid #b1120b",
+                background: "transparent",
+                color: "#b1120b",
+                cursor: "pointer",
+                fontWeight: "500",
+              }}
+            >
+              View All Collections →
+            </button>
           </div>
         </div>
       </section>

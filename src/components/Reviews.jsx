@@ -48,7 +48,7 @@ const CustomerLove = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  /* AUTO SLIDE — forward → end → restart */
+  /* AUTO SLIDE */
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => {
@@ -69,15 +69,12 @@ const CustomerLove = () => {
         }
 
         .customer-love {
-          padding: 70px 0;
-          background: #ffffff;
+          padding: 40px 0 20px; /* 🔥 bottom gap reduced */
+          background: #f8f7fb;
         }
 
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
+        /* ❌ REMOVED local .container override
+           Bootstrap default container hi use hoga */
 
         .title {
           text-align: center;
@@ -99,7 +96,7 @@ const CustomerLove = () => {
 
         .viewport {
           overflow: hidden;
-          margin-top: 40px;
+          margin-top: 24px;
         }
 
         .track {
@@ -114,7 +111,6 @@ const CustomerLove = () => {
           padding: 26px 24px 24px;
           border-radius: 20px;
           border: 1px solid var(--brand-red-light);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.08);
           position: relative;
         }
 
@@ -175,7 +171,7 @@ const CustomerLove = () => {
           display: flex;
           justify-content: center;
           gap: 10px;
-          margin-top: 28px;
+          margin-top: 12px;
         }
 
         .dot {
