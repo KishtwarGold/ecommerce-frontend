@@ -1,24 +1,31 @@
 import { useState, useEffect, useRef } from "react";
-import { Navbar, Nav, Container, Badge } from "react-bootstrap";
-import { NavLink, Link } from "react-router-dom";
-import { FiSearch, FiShoppingCart } from "react-icons/fi"; // ✅ outline cart icon
+import { Navbar, Nav, Container } from "react-bootstrap";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { FiSearch, FiShoppingCart } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { useCart } from "../context/CartContext";
+import { products } from "../utils/productsData";
 
 const NAVBAR_HEIGHT = 64;
-const THEME_COLOR = "#b1120b"; // 🔴 brand red
+const THEME_COLOR = "#b1120b";
 
 const AppNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   const lastScrollY = useRef(0);
-
-  // ✅ cart items from context
+  const listRef = useRef(null);
+  const navigate = useNavigate();
   const { cartItems = [] } = useCart();
 
   const openSearch = () => setShowSearch(true);
-  const closeSearch = () => setShowSearch(false);
+  const closeSearch = () => {
+    setShowSearch(false);
+    setSearchQuery("");
+    setActiveIndex(-1);
+  };
 
   /* ===== SCROLL LOGIC ===== */
   useEffect(() => {
@@ -39,6 +46,75 @@ const AppNavbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* ===== PRODUCT NAME + PRODUCT TYPE SEARCH ===== */
+  const filteredProducts = products.filter((product) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return false;
+
+    // match product name (pre, 1g, premium)
+    const nameMatch = product.name
+      .toLowerCase()
+      .split(" ")
+      .some((word) => word.startsWith(query));
+
+    // match product type (saffron, walnut)
+    const typeMatch = product.productType
+      .toLowerCase()
+      .startsWith(query);
+
+    return nameMatch || typeMatch;
+  });
+
+  /* ===== KEYBOARD HANDLING ===== */
+  const handleKeyDown = (e) => {
+    if (!filteredProducts.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev < filteredProducts.length - 1 ? prev + 1 : prev
+      );
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : -1));
+    }
+
+    if (e.key === "Enter" && activeIndex >= 0) {
+      navigate(`/product/${filteredProducts[activeIndex].id}`);
+      closeSearch();
+    }
+
+    if (e.key === "Escape") {
+      closeSearch();
+    }
+  };
+
+  /* ===== AUTO SCROLL ACTIVE ITEM ===== */
+  useEffect(() => {
+    if (listRef.current && activeIndex >= 0) {
+      const item = listRef.current.children[activeIndex];
+      item?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
+
+  /* ===== HIGHLIGHT MATCH ===== */
+  const highlightMatch = (name, query) => {
+    const index = name.toLowerCase().indexOf(query.toLowerCase());
+    if (index === -1) return name;
+
+    return (
+      <>
+        {name.substring(0, index)}
+        <span style={{ color: THEME_COLOR, fontWeight: 700 }}>
+          {name.substring(index, index + query.length)}
+        </span>
+        {name.substring(index + query.length)}
+      </>
+    );
+  };
+
   return (
     <>
       {/* ================= NAVBAR ================= */}
@@ -56,17 +132,15 @@ const AppNavbar = () => {
         }}
       >
         <Container className="d-flex align-items-center justify-content-between">
-          {/* LOGO */}
           <Navbar.Brand
             as={NavLink}
             to="/"
-            className="fw-bold fs-4 mb-0 me-auto me-lg-0"
+            className="fw-bold fs-4"
             style={{ color: THEME_COLOR, textDecoration: "none" }}
           >
             Kongdoon
           </Navbar.Brand>
 
-          {/* DESKTOP MENU */}
           <Nav className="d-none d-lg-flex gap-4 text-uppercase fw-semibold">
             {[
               { path: "/", label: "Home" },
@@ -87,9 +161,7 @@ const AppNavbar = () => {
             ))}
           </Nav>
 
-          {/* RIGHT ICONS */}
           <div className="d-flex align-items-center" style={{ gap: "24px" }}>
-            {/* SEARCH */}
             <FiSearch
               size={26}
               color={THEME_COLOR}
@@ -97,32 +169,26 @@ const AppNavbar = () => {
               onClick={openSearch}
             />
 
-            {/* CART (outline icon + red badge) */}
-            <Link
-  to="/cart"
-  style={{ position: "relative", color: "#b1120b" }}
->
-  <FiShoppingCart size={26} />
-
-  {cartItems.length > 0 && (
-    <span
-      style={{
-        position: "absolute",
-        top: "-8px",
-        right: "-10px",
-        backgroundColor: "#b1120b",
-        color: "#fff",
-        borderRadius: "999px",
-        fontSize: "11px",
-        fontWeight: "700",
-        padding: "2px 6px",
-      }}
-    >
-      {cartItems.length}
-    </span>
-  )}
-</Link>
-
+            <Link to="/cart" style={{ color: THEME_COLOR, position: "relative" }}>
+              <FiShoppingCart size={26} />
+              {cartItems.length > 0 && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-8px",
+                    right: "-10px",
+                    backgroundColor: THEME_COLOR,
+                    color: "#fff",
+                    borderRadius: "999px",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    padding: "2px 6px",
+                  }}
+                >
+                  {cartItems.length}
+                </span>
+              )}
+            </Link>
           </div>
         </Container>
       </Navbar>
@@ -146,27 +212,71 @@ const AppNavbar = () => {
             : "none",
         }}
       >
-        <Container className="d-flex align-items-center justify-content-center gap-3">
-          <input
-            type="text"
-            placeholder="Search for items..."
-            autoFocus={showSearch}
-            className="form-control rounded-pill"
-            style={{
-              maxWidth: "720px",
-              height: "46px",
-              paddingLeft: "20px",
-              fontSize: "15px",
-              border: `1px solid ${THEME_COLOR}`,
-              boxShadow: "none",
-            }}
-          />
+        <Container className="d-flex flex-column align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3 w-100 justify-content-center">
+            <input
+              type="text"
+              placeholder="Search for products..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setActiveIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
+              autoFocus={showSearch}
+              className="form-control rounded-pill"
+              style={{
+                maxWidth: "720px",
+                height: "46px",
+                paddingLeft: "20px",
+                fontSize: "15px",
+                border: `1px solid ${THEME_COLOR}`,
+                boxShadow: "none",
+              }}
+            />
 
-          <IoClose
-            size={26}
-            style={{ cursor: "pointer", color: THEME_COLOR }}
-            onClick={closeSearch}
-          />
+            <IoClose
+              size={26}
+              style={{ cursor: "pointer", color: THEME_COLOR }}
+              onClick={closeSearch}
+            />
+          </div>
+
+          {/* ================= AUTOCOMPLETE ================= */}
+          {searchQuery.length > 1 && (
+            <div
+              ref={listRef}
+              style={{
+                width: "90%",
+                maxWidth: "720px",
+                maxHeight: "96px", // only 2 items visible
+                overflowY: "auto",
+                background: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 12px 30px rgba(0,0,0,0.15)",
+              }}
+            >
+              {filteredProducts.map((item, index) => (
+                <Link
+                  key={item.id}
+                  to={`/product/${item.id}`}
+                  onClick={closeSearch}
+                  style={{
+                    display: "block",
+                    padding: "12px 16px",
+                    textDecoration: "none",
+                    color: "#000",
+                    background:
+                      index === activeIndex ? "#f5f5f5" : "transparent",
+                  }}
+                >
+                  <div style={{ fontWeight: 600 }}>
+                    {highlightMatch(item.name, searchQuery)}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </Container>
       </div>
     </>
