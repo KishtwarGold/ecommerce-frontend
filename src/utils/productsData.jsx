@@ -10,36 +10,9 @@ export const products = [
   // ======================
   // SAFFRON PRODUCTS
   // ======================
+
   {
     id: 1,
-    name: "Exclusive Collection 10G",
-    productType: "Saffron",
-    category: "Exclusive Collection",
-    weight: "10g",
-    price: 5100,
-    image: saffronimg1,
-    description: [
-      "A total of 10 grams of premium-grade saffron sourced from our Exclusive Collection, known for its deep color and rich aroma.",
-      "Carefully packed to preserve freshness and potency, this pack is ideal for regular home use, cooking, wellness drinks, and traditional recipes. Available to order across India."
-    ]
-  },
-
-  {
-    id: 2,
-    name: "Exclusive Collection 5G",
-    productType: "Saffron",
-    category: "Exclusive Collection",
-    weight: "5g",
-    price: 2800,
-    image: saffronimg2,
-    description: [
-      "This pack contains a total of 5 grams of high-quality saffron, perfectly measured for moderate household usage.",
-      "Designed for users who use saffron occasionally, it delivers authentic aroma, vibrant color, and consistent quality in every strand. Available to order pan India."
-    ]
-  },
-
-  {
-    id: 3,
     name: "1G Premium Pack",
     productType: "Saffron",
     category: "Premium Collection",
@@ -53,7 +26,7 @@ export const products = [
   },
 
   {
-    id: 4,
+    id: 2,
     name: "2G Premium Pack",
     productType: "Saffron",
     category: "Premium Collection",
@@ -63,6 +36,34 @@ export const products = [
     description: [
       "This pack includes 2 grams of premium saffron, ideal for light usage or first-time buyers.",
       "Designed for individual users who use saffron occasionally, it maintains authentic taste, aroma, and freshness in a compact and convenient size."
+    ]
+  },
+
+  {
+    id: 3,
+    name: "Exclusive Collection 5G",
+    productType: "Saffron",
+    category: "Exclusive Collection",
+    weight: "5g",
+    price: 2800,
+    image: saffronimg2,
+    description: [
+      "This pack contains a total of 5 grams of high-quality saffron, perfectly measured for moderate household usage.",
+      "Designed for users who use saffron occasionally, it delivers authentic aroma, vibrant color, and consistent quality in every strand. Available to order pan India."
+    ]
+  },
+
+  {
+    id: 4,
+    name: "Exclusive Collection 10G",
+    productType: "Saffron",
+    category: "Exclusive Collection",
+    weight: "10g",
+    price: 5100,
+    image: saffronimg1,
+    description: [
+      "A total of 10 grams of premium-grade saffron sourced from our Exclusive Collection, known for its deep color and rich aroma.",
+      "Carefully packed to preserve freshness and potency, this pack is ideal for regular home use, cooking, wellness drinks, and traditional recipes. Available to order across India."
     ]
   },
 
