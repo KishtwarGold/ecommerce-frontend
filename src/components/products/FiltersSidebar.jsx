@@ -173,14 +173,14 @@ const FiltersSidebar = ({ filters, setFilters, onReset }) => {
             />
             Premium Collection
           </label>
-          <label>
+          {/* <label>
             <input
               type="checkbox"
               checked={filters.category.includes("Gift Boxes")}
               onChange={() => toggleFilter("category", "Gift Boxes")}
             />
             Gift Boxes
-          </label>
+          </label> */}
         </div>
 
         <hr />
@@ -188,6 +188,14 @@ const FiltersSidebar = ({ filters, setFilters, onReset }) => {
         {/* WEIGHT */}
         <div className="filters-section">
           <h4>Weight</h4>
+          <label>
+            <input
+              type="checkbox"
+              checked={filters.weight.includes("1g")}
+              onChange={() => toggleFilter("weight", "1g")}
+            />
+            1g
+          </label>
           <label>
             <input
               type="checkbox"
@@ -222,26 +230,26 @@ const FiltersSidebar = ({ filters, setFilters, onReset }) => {
           <label>
             <input
               type="checkbox"
-              checked={filters.price.includes("UNDER_500")}
-              onChange={() => toggleFilter("price", "UNDER_500")}
+              checked={filters.price.includes("UNDER_1000")}
+              onChange={() => toggleFilter("price", "UNDER_1000")}
             />
-            Under ₹500
+            Under ₹1000
           </label>
           <label>
             <input
               type="checkbox"
-              checked={filters.price.includes("500_1000")}
-              onChange={() => toggleFilter("price", "500_1000")}
+              checked={filters.price.includes("1000_2000")}
+              onChange={() => toggleFilter("price", "1000_2000")}
             />
-            ₹500 – ₹1000
+            ₹1000 – ₹2000
           </label>
           <label>
             <input
               type="checkbox"
-              checked={filters.price.includes("1000_3000")}
-              onChange={() => toggleFilter("price", "1000_3000")}
+              checked={filters.price.includes("2000_3000")}
+              onChange={() => toggleFilter("price", "2000_3000")}
             />
-            ₹1000 – ₹3000
+            ₹2000 – ₹3000
           </label>
           <label>
             <input
