@@ -81,10 +81,10 @@ const ContactSection = () => {
               <div className="follow-content">
                 <h6>Follow Us</h6>
                 <div className="social-icons">
-                  <a href="#" aria-label="Instagram"><FaInstagram /></a>
-                  <a href="#" aria-label="YouTube"><FaYoutube /></a>
-                  <a href="#" aria-label="WhatsApp"><FaWhatsapp /></a>
-                  <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
+                  <a href="https://www.instagram.com/kongdoon_saffron?igsh=eWtsdXE1ZXNxZjRo" aria-label="Instagram"><FaInstagram /></a>
+                  <a href="https://youtube.com/@kongdoon?si=jKdEPxO15RTlNDHa" aria-label="YouTube"><FaYoutube /></a>
+                  <a href="https://wa.me/918169045778" aria-label="WhatsApp"><FaWhatsapp /></a>
+                  <a href="https://www.linkedin.com/company/kongdoon/" aria-label="LinkedIn"><FaLinkedin /></a>
                 </div>
               </div>
             </div>
