@@ -1,8 +1,8 @@
-import giftbox from "../assets/giftbox.jpeg";
+import oneKgimage from "../assets/1kg.png";
 import saffronimg1 from "../assets/1st.jpeg";
 import saffronimg2 from "../assets/2nd.jpeg";
 import saffronimg3 from "../assets/3rd.jpg";
-import saffronimg4 from "../assets/4th.jpg";
+// import saffronimg4 from "../assets/4th.jpg";
 import walnutimg from "../assets/walnut.jpg";
 import walnutimg2 from "../assets/walnut2.png";
 
@@ -18,7 +18,7 @@ export const products = [
     category: "Premium Collection",
     weight: "1g",
     price: 650,
-    image: giftbox,
+    image: oneKgimage,
     description: [
       "A total of 1 gram of premium saffron presented in an elegant gift box, making it a perfect choice for festive and special occasions.",
       "Carefully curated for gifting, this pack combines luxurious packaging with superior saffron quality, ideal for weddings, celebrations, and premium gifting."
