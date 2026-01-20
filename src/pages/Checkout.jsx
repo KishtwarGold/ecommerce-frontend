@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { load } from '@cashfreepayments/cashfree-js';
 import axios from "axios";
 import DeliveryForm from "../components/checkout/DeliveryForm";
 import CartTotals from "../components/checkout/CartTotals";
@@ -11,48 +10,45 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, getTotalPrice, clearCart } = useCart();
 
-  // Use cart from route state OR fallback to context cart
   const items = state?.items || cartItems;
   const subtotal = state?.subtotal || getTotalPrice();
   const total = state?.total || getTotalPrice();
 
-  // States
   const [orderId, setOrderId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [cashfree, setCashfree] = useState(null);
 
-  // Initialize Cashfree SDK
-  useEffect(() => {
-    const initializeSDK = async () => {
-      try {
-        const cashfreeInstance = await load({
-          mode: "production",
-        });
-        setCashfree(cashfreeInstance);
-        console.log("✅ Cashfree SDK initialized");
-      } catch (error) {
-        console.error("❌ Cashfree SDK initialization failed:", error);
+  const loadCashfreeSDK = () => {
+    return new Promise((resolve, reject) => {
+      if (window.Cashfree) {
+        resolve(window.Cashfree);
+        return;
       }
-    };
 
-    initializeSDK();
-  }, []);
+      const script = document.createElement('script');
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+      script.async = true;
+      
+      script.onload = () => {
+        if (window.Cashfree) {
+          console.log("✅ Cashfree SDK loaded");
+          resolve(window.Cashfree);
+        } else {
+          reject(new Error("Cashfree not found"));
+        }
+      };
+      
+      script.onerror = () => {
+        reject(new Error("⚠️ Payment system blocked. Please disable ad blocker."));
+      };
+      
+      document.head.appendChild(script);
+    });
+  };
 
-  // Get payment session ID from backend
   const getSessionId = async (customerData) => {
     try {
-      // Debug logging
       console.log("API URL:", import.meta.env.VITE_API_URL);
-      console.log("Sending payment data:", {
-        amount: total,
-        customer: {
-          customer_name: customerData.name,
-          customer_email: customerData.email,
-          customer_phone: customerData.phone,
-        },
-        items: items
-      });
-
+      
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create`, {
         amount: total,
         customer: {
@@ -69,16 +65,12 @@ const Checkout = () => {
         return res.data.paymentSessionId;
       }
     } catch (error) {
-      console.error("❌ Error creating payment session:", error);
-      console.error("Response data:", error.response?.data);
-      console.error("Response status:", error.response?.status);
-      console.error("Request data:", error.config?.data);
-      alert("Error creating payment session. Please try again.");
+      console.error("❌ Error creating payment:", error);
+      alert("Error creating payment. Please try again.");
       return null;
     }
   };
 
-  // Verify payment
   const verifyPayment = async (orderIdToVerify) => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/verify`, {
@@ -86,23 +78,22 @@ const Checkout = () => {
       });
 
       if (res && res.data && res.data.success) {
-        alert("Payment verified successfully! ✅ Your order has been placed.");
+        alert("✅ Payment successful! Order placed.");
         clearCart();
         navigate('/');
       } else {
-        alert("Payment verification failed. Please contact support.");
+        alert("Payment verification failed.");
       }
     } catch (error) {
-      console.error("Payment verification error:", error);
-      alert("Payment verification failed. Please contact support.");
+      console.error("Verification error:", error);
+      alert("Payment verification failed.");
     }
   };
 
-  // Handle final order
   const handleFinalOrder = async (formData) => {
     try {
       if (items.length === 0) {
-        alert("Your cart is empty!");
+        alert("Cart is empty!");
         return;
       }
 
@@ -111,15 +102,21 @@ const Checkout = () => {
         return;
       }
 
-      if (!cashfree) {
-        alert("Payment system is loading. Please wait...");
+      console.log("Final Amount:", total);
+      setLoading(true);
+
+      let CashfreeSDK;
+      try {
+        CashfreeSDK = await loadCashfreeSDK();
+      } catch (error) {
+        alert(error.message);
+        setLoading(false);
         return;
       }
 
-      console.log("Final Payable Amount:", total);
-      console.log("Cart Items:", items);
-      console.log("Customer Details:", formData);
-      setLoading(true);
+      const cashfree = await CashfreeSDK.Cashfree.init({
+        mode: "production"
+      });
 
       const sessionId = await getSessionId(formData);
       
@@ -133,24 +130,35 @@ const Checkout = () => {
         redirectTarget: "_modal",
       };
 
+      console.log("🚀 Opening payment modal...");
+
       cashfree.checkout(checkoutOptions).then((result) => {
-        console.log("Payment completed:", result);
-        verifyPayment(orderId);
+        console.log("Payment result:", result);
+        
+        if (result.error) {
+          alert("Payment failed: " + result.error.message);
+          setLoading(false);
+          return;
+        }
+        
+        if (result.paymentDetails) {
+          verifyPayment(orderId);
+        }
+        
         setLoading(false);
       }).catch((error) => {
         console.error("Payment error:", error);
-        setLoading(false);
         alert("Payment cancelled or failed.");
+        setLoading(false);
       });
 
     } catch (error) {
       console.error("Checkout Error:", error);
       setLoading(false);
-      alert("Something went wrong. Please try again.");
+      alert("Something went wrong.");
     }
   };
 
-  // Check if cart is empty
   if (!items || items.length === 0) {
     return (
       <div className="checkout-bg" style={{ textAlign: "center", paddingTop: "150px" }}>
@@ -217,9 +225,6 @@ const Checkout = () => {
             subtotal={subtotal}
             total={total}
             items={items}
-            onPlaceOrder={() => {
-              console.log("Place order clicked");
-            }}
             loading={loading}
           />
         </div>
@@ -229,4 +234,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
