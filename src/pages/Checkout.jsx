@@ -21,7 +21,7 @@ const Checkout = () => {
       // Check if already loaded
       if (window.Cashfree) {
         console.log("✅ Cashfree SDK already loaded");
-        resolve(window.Cashfree);
+        resolve();
         return;
       }
 
@@ -30,7 +30,7 @@ const Checkout = () => {
       if (existing) {
         existing.addEventListener('load', () => {
           if (window.Cashfree) {
-            resolve(window.Cashfree);
+            resolve();
           } else {
             reject(new Error("Cashfree not found after load"));
           }
@@ -49,7 +49,7 @@ const Checkout = () => {
         setTimeout(() => {
           if (window.Cashfree) {
             console.log("✅ Cashfree SDK loaded successfully");
-            resolve(window.Cashfree);
+            resolve();
           } else {
             reject(new Error("Cashfree object not found after script load"));
           }
@@ -141,9 +141,8 @@ const Checkout = () => {
       setLoading(true);
 
       // Load Cashfree SDK
-      let CashfreeSDK;
       try {
-        CashfreeSDK = await loadCashfreeSDK();
+        await loadCashfreeSDK();
       } catch (error) {
         alert(error.message);
         setLoading(false);
@@ -151,13 +150,13 @@ const Checkout = () => {
       }
 
       // Initialize Cashfree in PRODUCTION mode
-      console.log("🔧 Initializing Cashfree...", CashfreeSDK);
+      console.log("🔧 Initializing Cashfree...", window.Cashfree);
       
-      if (!CashfreeSDK || !CashfreeSDK.Cashfree) {
+      if (!window.Cashfree) {
         throw new Error("Cashfree SDK not properly loaded");
       }
       
-      const cashfree = await CashfreeSDK.Cashfree.init({
+      const cashfree = await window.Cashfree.init({
         mode: "production" // ✅ Production mode for live
       });
       
