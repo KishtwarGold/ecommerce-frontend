@@ -16,56 +16,6 @@ const Checkout = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const loadCashfreeSDK = () => {
-    return new Promise((resolve, reject) => {
-      // Check if already loaded
-      if (window.Cashfree) {
-        console.log("✅ Cashfree SDK already loaded");
-        resolve();
-        return;
-      }
-
-      // Check if script already exists
-      const existing = document.querySelector('script[src*="cashfree.js"]');
-      if (existing) {
-        existing.addEventListener('load', () => {
-          if (window.Cashfree) {
-            resolve();
-          } else {
-            reject(new Error("Cashfree not found after load"));
-          }
-        });
-        return;
-      }
-
-      // Create new script
-      const script = document.createElement('script');
-      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-      script.async = false; // ✅ Changed to false for better loading
-      
-      script.onload = () => {
-        console.log("📦 Script loaded, checking Cashfree...");
-        // Wait a bit for Cashfree to be available
-        setTimeout(() => {
-          if (window.Cashfree) {
-            console.log("✅ Cashfree SDK loaded successfully");
-            resolve();
-          } else {
-            reject(new Error("Cashfree object not found after script load"));
-          }
-        }, 100);
-      };
-      
-      script.onerror = (e) => {
-        console.error("Script load error:", e);
-        reject(new Error("⚠️ Failed to load Cashfree SDK. Check internet connection or disable ad blocker."));
-      };
-      
-      document.head.appendChild(script);
-      console.log("📡 Loading Cashfree SDK...");
-    });
-  };
-
   const getSessionId = async (customerData) => {
     try {
       console.log("📡 Creating payment session...");
@@ -84,7 +34,6 @@ const Checkout = () => {
       
       if (res.data && res.data.paymentSessionId) {
         console.log("✅ Payment session created:", res.data);
-        // 🔥 RETURN BOTH sessionId AND orderId
         return {
           sessionId: res.data.paymentSessionId,
           orderId: res.data.orderId
@@ -140,29 +89,16 @@ const Checkout = () => {
       
       setLoading(true);
 
-      // Load Cashfree SDK
-      try {
-        await loadCashfreeSDK();
-      } catch (error) {
-        alert(error.message);
+      // Check if Cashfree is loaded
+      if (typeof window.Cashfree === 'undefined') {
+        alert("⚠️ Payment system not loaded. Please refresh the page and try again.");
         setLoading(false);
         return;
       }
 
-      // Initialize Cashfree in PRODUCTION mode
-      console.log("🔧 Initializing Cashfree...", window.Cashfree);
-      
-      if (!window.Cashfree) {
-        throw new Error("Cashfree SDK not properly loaded");
-      }
-      
-      const cashfree = await window.Cashfree.init({
-        mode: "production" // ✅ Production mode for live
-      });
-      
-      console.log("✅ Cashfree initialized:", cashfree);
+      console.log("🔍 Cashfree object:", window.Cashfree);
 
-      // Get payment session - 🔥 GET BOTH sessionId AND orderId
+      // Get payment session
       const paymentData = await getSessionId(formData);
       
       if (!paymentData || !paymentData.sessionId) {
@@ -175,12 +111,27 @@ const Checkout = () => {
       console.log("💳 Session ID:", sessionId);
       console.log("📋 Order ID:", orderId);
 
+      // Initialize Cashfree
+      let cashfree;
+      try {
+        console.log("🔧 Initializing Cashfree in production mode...");
+        cashfree = window.Cashfree({
+          mode: "production"
+        });
+        console.log("✅ Cashfree initialized:", cashfree);
+      } catch (initError) {
+        console.error("❌ Cashfree init error:", initError);
+        alert("Failed to initialize payment system: " + initError.message);
+        setLoading(false);
+        return;
+      }
+
       const checkoutOptions = {
         paymentSessionId: sessionId,
         redirectTarget: "_modal",
       };
 
-      console.log("🚀 Opening Cashfree payment modal...");
+      console.log("🚀 Opening Cashfree payment modal with options:", checkoutOptions);
 
       // Open payment modal
       cashfree.checkout(checkoutOptions).then((result) => {
@@ -193,10 +144,9 @@ const Checkout = () => {
           return;
         }
         
-        // 🔥 USE THE orderId FROM RESPONSE, NOT STATE!
         if (result.paymentDetails) {
           console.log("✅ Payment completed, verifying...");
-          verifyPayment(orderId); // ✅ NOW USING CORRECT orderId
+          verifyPayment(orderId);
         }
         
         setLoading(false);
