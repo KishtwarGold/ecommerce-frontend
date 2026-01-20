@@ -17,7 +17,7 @@ export const products = [
     productType: "Saffron",
     category: "Premium Collection",
     weight: "1g",
-    price: 650,
+    price:5,
     image: saffronimg4,
     description: [
       "A total of 1 gram of premium saffron presented in an elegant gift box, making it a perfect choice for festive and special occasions.",
