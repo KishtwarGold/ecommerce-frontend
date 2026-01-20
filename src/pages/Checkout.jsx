@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import axios from "axios";
@@ -15,65 +15,86 @@ const Checkout = () => {
   const total = state?.total || getTotalPrice();
 
   const [loading, setLoading] = useState(false);
+  const [cashfreeReady, setCashfreeReady] = useState(false);
+
+  // ✅ Preload Cashfree SDK on component mount
+  useEffect(() => {
+    const checkCashfree = () => {
+      if (typeof window.Cashfree !== 'undefined') {
+        console.log("✅ Cashfree SDK loaded");
+        setCashfreeReady(true);
+      } else {
+        console.log("⏳ Waiting for Cashfree SDK...");
+        setTimeout(checkCashfree, 100);
+      }
+    };
+    checkCashfree();
+  }, []);
 
   const getSessionId = async (customerData) => {
     try {
       console.log("📡 Creating payment session...");
-      console.log("API URL:", import.meta.env.VITE_API_URL);
-      console.log("Amount:", total);
       
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create`, {
-        amount: total,
-        customer: {
-          customer_name: customerData.name,
-          customer_email: customerData.email,
-          customer_phone: customerData.phone,
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/payment/create`, 
+        {
+          amount: total,
+          customer: {
+            customer_name: customerData.name,
+            customer_email: customerData.email,
+            customer_phone: customerData.phone,
+          },
+          items: items
         },
-        items: items
-      });
+        {
+          timeout: 10000, // 10 second timeout
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       
-      if (res.data && res.data.paymentSessionId) {
-        console.log("✅ Payment session created:", res.data);
+      if (res.data?.paymentSessionId) {
+        console.log("✅ Session created:", res.data.orderId);
         return {
           sessionId: res.data.paymentSessionId,
           orderId: res.data.orderId
         };
-      } else {
-        throw new Error("No payment session ID received");
       }
+      throw new Error("No payment session ID received");
+      
     } catch (error) {
-      console.error("❌ Error creating payment:", error.response?.data || error.message);
-      throw error;
+      console.error("❌ Session creation failed:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to create payment session");
     }
   };
 
   const verifyPayment = async (orderIdToVerify) => {
     try {
-      console.log("🔍 Verifying payment for order:", orderIdToVerify);
+      console.log("🔍 Verifying payment:", orderIdToVerify);
       
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/verify`, {
-        orderId: orderIdToVerify
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/payment/verify`,
+        { orderId: orderIdToVerify },
+        { timeout: 10000 }
+      );
 
-      console.log("Verification response:", res.data);
-
-      if (res && res.data && res.data.success) {
+      if (res?.data?.success) {
         alert("✅ Payment successful! Order placed.");
         clearCart();
         navigate('/');
       } else {
-        alert("❌ Payment verification failed.");
+        alert("❌ Payment verification failed. Please contact support with Order ID: " + orderIdToVerify);
       }
     } catch (error) {
-      console.error("❌ Verification error:", error.response?.data || error.message);
-      alert("Payment verification failed: " + (error.response?.data?.message || error.message));
+      console.error("❌ Verification error:", error);
+      alert("Payment verification failed. Order ID: " + orderIdToVerify);
     }
   };
 
   const handleFinalOrder = async (formData) => {
     try {
-      console.log("🛒 Starting checkout process...");
-      
+      // Validation
       if (items.length === 0) {
         alert("Cart is empty!");
         return;
@@ -84,62 +105,45 @@ const Checkout = () => {
         return;
       }
 
-      console.log("💰 Final Amount:", total);
-      console.log("📦 Customer Data:", formData);
-      
-      setLoading(true);
-
-      // Check if Cashfree is loaded
-      if (typeof window.Cashfree === 'undefined') {
-        alert("⚠️ Payment system not loaded. Please refresh the page and try again.");
-        setLoading(false);
+      // Check Cashfree
+      if (!cashfreeReady) {
+        alert("⏳ Payment system is loading. Please wait a moment and try again.");
         return;
       }
 
-      console.log("🔍 Cashfree object:", window.Cashfree);
+      setLoading(true);
+      console.log("🛒 Processing order...", { amount: total });
 
       // Get payment session
       const paymentData = await getSessionId(formData);
       
-      if (!paymentData || !paymentData.sessionId) {
-        alert("Failed to create payment session");
-        setLoading(false);
-        return;
+      if (!paymentData?.sessionId) {
+        throw new Error("Failed to create payment session");
       }
 
       const { sessionId, orderId } = paymentData;
-      console.log("💳 Session ID:", sessionId);
-      console.log("📋 Order ID:", orderId);
+      console.log("💳 Opening payment for order:", orderId);
 
       // Initialize Cashfree
-      let cashfree;
-      try {
-        console.log("🔧 Initializing Cashfree in production mode...");
-        cashfree = window.Cashfree({
-          mode: "production"
-        });
-        console.log("✅ Cashfree initialized:", cashfree);
-      } catch (initError) {
-        console.error("❌ Cashfree init error:", initError);
-        alert("Failed to initialize payment system: " + initError.message);
-        setLoading(false);
-        return;
-      }
+      const cashfree = window.Cashfree({
+        mode: import.meta.env.VITE_CASHFREE_ENV === "PROD" ? "production" : "sandbox"
+      });
 
+      // Payment options - using _self for better compatibility
       const checkoutOptions = {
         paymentSessionId: sessionId,
-        redirectTarget: "_modal",
+        redirectTarget: "_modal"
       };
 
-      console.log("🚀 Opening Cashfree payment modal with options:", checkoutOptions);
+      console.log("🚀 Opening payment modal...");
 
-      // Open payment modal
+      // Open payment
       cashfree.checkout(checkoutOptions).then((result) => {
-        console.log("💳 Payment modal result:", result);
+        console.log("💳 Payment result:", result);
         
         if (result.error) {
           console.error("Payment error:", result.error);
-          alert("Payment failed: " + result.error.message);
+          alert(`Payment failed: ${result.error.message}`);
           setLoading(false);
           return;
         }
@@ -147,19 +151,20 @@ const Checkout = () => {
         if (result.paymentDetails) {
           console.log("✅ Payment completed, verifying...");
           verifyPayment(orderId);
+        } else {
+          setLoading(false);
         }
         
-        setLoading(false);
       }).catch((error) => {
-        console.error("💥 Payment modal error:", error);
-        alert("Payment cancelled or failed.");
+        console.error("💥 Payment error:", error);
+        alert("Payment was cancelled or failed.");
         setLoading(false);
       });
 
     } catch (error) {
       console.error("💥 Checkout Error:", error);
       setLoading(false);
-      alert("Something went wrong: " + (error.message || "Unknown error"));
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -219,6 +224,22 @@ const Checkout = () => {
       `}</style>
 
       <div className="checkout-bg">
+        {!cashfreeReady && (
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            zIndex: 9999
+          }}>
+            <p>Loading payment system...</p>
+          </div>
+        )}
+        
         <div className="checkout-grid">
           <DeliveryForm 
             onSubmit={handleFinalOrder}
