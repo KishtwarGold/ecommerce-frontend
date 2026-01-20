@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
 
-const DeliveryForm = () => {
+const DeliveryForm = ({ onSubmit, loading }) => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    street: "",
+    phone: "",
+    zipcode: ""
+  });
+  
   const [countryCode, setCountryCode] = useState("");
   const [stateCode, setStateCode] = useState("");
   const [city, setCity] = useState("");
@@ -9,6 +18,45 @@ const DeliveryForm = () => {
   const countries = Country.getAllCountries();
   const states = countryCode ? State.getStatesOfCountry(countryCode) : [];
   const cities = stateCode ? City.getCitiesOfState(countryCode, stateCode) : [];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.firstName || !formData.email || !formData.phone) {
+      alert("Please fill all required fields!");
+      return;
+    }
+
+    if (!countryCode || !stateCode || !city) {
+      alert("Please select Country, State, and City!");
+      return;
+    }
+
+    // Prepare data for parent
+    const customerData = {
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      email: formData.email,
+      phone: formData.phone,
+      address: {
+        street: formData.street,
+        city: city,
+        state: states.find(s => s.isoCode === stateCode)?.name || stateCode,
+        country: countries.find(c => c.isoCode === countryCode)?.name || countryCode,
+        zipcode: formData.zipcode
+      }
+    };
+
+    console.log("📦 Submitting order with data:", customerData);
+    onSubmit(customerData);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   return (
     <>
@@ -74,6 +122,33 @@ const DeliveryForm = () => {
           color: #9ca3af;
         }
 
+        .place-order-btn {
+          width: 100%;
+          height: 60px;
+          background: #dc2626;
+          color: white;
+          border: none;
+          border-radius: 16px;
+          font-size: 16px;
+          font-weight: 700;
+          letter-spacing: 1px;
+          cursor: pointer;
+          margin-top: 24px;
+          transition: all 0.3s ease;
+        }
+
+        .place-order-btn:hover:not(:disabled) {
+          background: #b91c1c;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .place-order-btn:disabled {
+          background: #9ca3af;
+          cursor: not-allowed;
+          transform: none;
+        }
+
         @media (max-width: 640px) {
           .checkout-card {
             padding: 30px 24px;
@@ -96,79 +171,116 @@ const DeliveryForm = () => {
         </div>
 
         {/* FORM */}
-        <div className="checkout-grid-form">
-          <input placeholder="First name" required />
-          <input placeholder="Last name" />
+        <form onSubmit={handleSubmit}>
+          <div className="checkout-grid-form">
+            <input 
+              name="firstName"
+              placeholder="First name" 
+              value={formData.firstName}
+              onChange={handleChange}
+              required 
+            />
+            <input 
+              name="lastName"
+              placeholder="Last name"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
 
-          <input
-            className="full"
-            type="email"
-            placeholder="Email address"
-            required
-          />
+            <input
+              className="full"
+              type="email"
+              name="email"
+              placeholder="Email address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
 
-          <input
-            className="full"
-            placeholder="Street address"
-            required
-          />
+            <input
+              className="full"
+              name="street"
+              placeholder="Street address"
+              value={formData.street}
+              onChange={handleChange}
+              required
+            />
 
-          <select
-            value={countryCode}
-            onChange={(e) => {
-              setCountryCode(e.target.value);
-              setStateCode("");
-              setCity("");
-            }}
-            required
+            <select
+              value={countryCode}
+              onChange={(e) => {
+                setCountryCode(e.target.value);
+                setStateCode("");
+                setCity("");
+              }}
+              required
+            >
+              <option value="">Select Country</option>
+              {countries.map((c) => (
+                <option key={c.isoCode} value={c.isoCode}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={stateCode}
+              onChange={(e) => {
+                setStateCode(e.target.value);
+                setCity("");
+              }}
+              disabled={!countryCode}
+              required
+            >
+              <option value="">Select State</option>
+              {states.map((s) => (
+                <option key={s.isoCode} value={s.isoCode}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={!stateCode}
+              required
+            >
+              <option value="">Select City</option>
+              {cities.map((ct) => (
+                <option key={ct.name} value={ct.name}>
+                  {ct.name}
+                </option>
+              ))}
+            </select>
+
+            <input 
+              name="zipcode"
+              placeholder="Zipcode"
+              value={formData.zipcode}
+              onChange={handleChange}
+              required 
+            />
+
+            <input
+              className="full"
+              name="phone"
+              placeholder="Phone number"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* 🔥 YE HAI TERA BUTTON BHAI! 🔥 */}
+          <button 
+            type="submit" 
+            className="place-order-btn"
+            disabled={loading}
           >
-            <option value="">Select Country</option>
-            {countries.map((c) => (
-              <option key={c.isoCode} value={c.isoCode}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={stateCode}
-            onChange={(e) => {
-              setStateCode(e.target.value);
-              setCity("");
-            }}
-            disabled={!countryCode}
-            required
-          >
-            <option value="">Select State</option>
-            {states.map((s) => (
-              <option key={s.isoCode} value={s.isoCode}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            disabled={!stateCode}
-            required
-          >
-            <option value="">Select City</option>
-            {cities.map((ct) => (
-              <option key={ct.name} value={ct.name}>
-                {ct.name}
-              </option>
-            ))}
-          </select>
-
-          <input placeholder="Zipcode" required />
-
-          <input
-            className="full"
-            placeholder="Phone number"
-            required
-          />
-        </div>
+            {loading ? "PROCESSING..." : "PLACE ORDER"}
+          </button>
+        </form>
       </div>
     </>
   );

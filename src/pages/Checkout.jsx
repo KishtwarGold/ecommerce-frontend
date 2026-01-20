@@ -14,7 +14,6 @@ const Checkout = () => {
   const subtotal = state?.subtotal || getTotalPrice();
   const total = state?.total || getTotalPrice();
 
-  const [orderId, setOrderId] = useState("");
   const [loading, setLoading] = useState(false);
 
   const loadCashfreeSDK = () => {
@@ -47,7 +46,9 @@ const Checkout = () => {
 
   const getSessionId = async (customerData) => {
     try {
+      console.log("📡 Creating payment session...");
       console.log("API URL:", import.meta.env.VITE_API_URL);
+      console.log("Amount:", total);
       
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create`, {
         amount: total,
@@ -61,37 +62,47 @@ const Checkout = () => {
       
       if (res.data && res.data.paymentSessionId) {
         console.log("✅ Payment session created:", res.data);
-        setOrderId(res.data.orderId);
-        return res.data.paymentSessionId;
+        // 🔥 RETURN BOTH sessionId AND orderId
+        return {
+          sessionId: res.data.paymentSessionId,
+          orderId: res.data.orderId
+        };
+      } else {
+        throw new Error("No payment session ID received");
       }
     } catch (error) {
-      console.error("❌ Error creating payment:", error);
-      alert("Error creating payment. Please try again.");
-      return null;
+      console.error("❌ Error creating payment:", error.response?.data || error.message);
+      throw error;
     }
   };
 
   const verifyPayment = async (orderIdToVerify) => {
     try {
+      console.log("🔍 Verifying payment for order:", orderIdToVerify);
+      
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/verify`, {
         orderId: orderIdToVerify
       });
+
+      console.log("Verification response:", res.data);
 
       if (res && res.data && res.data.success) {
         alert("✅ Payment successful! Order placed.");
         clearCart();
         navigate('/');
       } else {
-        alert("Payment verification failed.");
+        alert("❌ Payment verification failed.");
       }
     } catch (error) {
-      console.error("Verification error:", error);
-      alert("Payment verification failed.");
+      console.error("❌ Verification error:", error.response?.data || error.message);
+      alert("Payment verification failed: " + (error.response?.data?.message || error.message));
     }
   };
 
   const handleFinalOrder = async (formData) => {
     try {
+      console.log("🛒 Starting checkout process...");
+      
       if (items.length === 0) {
         alert("Cart is empty!");
         return;
@@ -102,9 +113,12 @@ const Checkout = () => {
         return;
       }
 
-      console.log("Final Amount:", total);
+      console.log("💰 Final Amount:", total);
+      console.log("📦 Customer Data:", formData);
+      
       setLoading(true);
 
+      // Load Cashfree SDK
       let CashfreeSDK;
       try {
         CashfreeSDK = await loadCashfreeSDK();
@@ -114,48 +128,59 @@ const Checkout = () => {
         return;
       }
 
+      // Initialize Cashfree in PRODUCTION mode
       const cashfree = await CashfreeSDK.Cashfree.init({
-        mode: "production"
+        mode: "production" // ✅ Production mode for live
       });
 
-      const sessionId = await getSessionId(formData);
+      // Get payment session - 🔥 GET BOTH sessionId AND orderId
+      const paymentData = await getSessionId(formData);
       
-      if (!sessionId) {
+      if (!paymentData || !paymentData.sessionId) {
+        alert("Failed to create payment session");
         setLoading(false);
         return;
       }
+
+      const { sessionId, orderId } = paymentData;
+      console.log("💳 Session ID:", sessionId);
+      console.log("📋 Order ID:", orderId);
 
       const checkoutOptions = {
         paymentSessionId: sessionId,
         redirectTarget: "_modal",
       };
 
-      console.log("🚀 Opening payment modal...");
+      console.log("🚀 Opening Cashfree payment modal...");
 
+      // Open payment modal
       cashfree.checkout(checkoutOptions).then((result) => {
-        console.log("Payment result:", result);
+        console.log("💳 Payment modal result:", result);
         
         if (result.error) {
+          console.error("Payment error:", result.error);
           alert("Payment failed: " + result.error.message);
           setLoading(false);
           return;
         }
         
+        // 🔥 USE THE orderId FROM RESPONSE, NOT STATE!
         if (result.paymentDetails) {
-          verifyPayment(orderId);
+          console.log("✅ Payment completed, verifying...");
+          verifyPayment(orderId); // ✅ NOW USING CORRECT orderId
         }
         
         setLoading(false);
       }).catch((error) => {
-        console.error("Payment error:", error);
+        console.error("💥 Payment modal error:", error);
         alert("Payment cancelled or failed.");
         setLoading(false);
       });
 
     } catch (error) {
-      console.error("Checkout Error:", error);
+      console.error("💥 Checkout Error:", error);
       setLoading(false);
-      alert("Something went wrong.");
+      alert("Something went wrong: " + (error.message || "Unknown error"));
     }
   };
 
