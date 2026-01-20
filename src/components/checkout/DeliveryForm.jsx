@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
 
-const DeliveryForm = ({ onSubmit, loading }) => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    phone: "",
-    zipcode: ""
-  });
-  
+const DeliveryForm = () => {
   const [countryCode, setCountryCode] = useState("");
   const [stateCode, setStateCode] = useState("");
   const [city, setCity] = useState("");
@@ -18,50 +9,6 @@ const DeliveryForm = ({ onSubmit, loading }) => {
   const countries = Country.getAllCountries();
   const states = countryCode ? State.getStatesOfCountry(countryCode) : [];
   const cities = stateCode ? City.getCitiesOfState(countryCode, stateCode) : [];
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Validation
-    if (!formData.firstName || !formData.phone) {
-      alert("Please fill all required fields!");
-      return;
-    }
-
-    if (formData.phone.length > 10) {
-      alert("Phone number must be maximum 10 digits!");
-      return;
-    }
-
-    if (!countryCode || !stateCode) {
-      alert("Please select Country and State!");
-      return;
-    }
-
-    // Prepare data for parent
-    const customerData = {
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      phone: formData.phone,
-      address: {
-        street: formData.street,
-        city: city,
-        state: states.find(s => s.isoCode === stateCode)?.name || stateCode,
-        country: countries.find(c => c.isoCode === countryCode)?.name || countryCode,
-        zipcode: formData.zipcode
-      }
-    };
-
-    console.log("📦 Submitting order with data:", customerData);
-    onSubmit(customerData);
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
 
   return (
     <>
@@ -127,33 +74,6 @@ const DeliveryForm = ({ onSubmit, loading }) => {
           color: #9ca3af;
         }
 
-        .place-order-btn {
-          width: 100%;
-          height: 60px;
-          background: #dc2626;
-          color: white;
-          border: none;
-          border-radius: 16px;
-          font-size: 16px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          cursor: pointer;
-          margin-top: 24px;
-          transition: all 0.3s ease;
-        }
-
-        .place-order-btn:hover:not(:disabled) {
-          background: #b91c1c;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
-        }
-
-        .place-order-btn:disabled {
-          background: #9ca3af;
-          cursor: not-allowed;
-          transform: none;
-        }
-
         @media (max-width: 640px) {
           .checkout-card {
             padding: 30px 24px;
@@ -176,117 +96,79 @@ const DeliveryForm = ({ onSubmit, loading }) => {
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit}>
-          <div className="checkout-grid-form">
-            <input 
-              name="firstName"
-              placeholder="First name (e.g. John)" 
-              value={formData.firstName}
-              onChange={handleChange}
-              required 
-            />
-            <input 
-              name="lastName"
-              placeholder="Last name (e.g. Doe)"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
+        <div className="checkout-grid-form">
+          <input placeholder="First name" required />
+          <input placeholder="Last name" />
 
-            <input
-              className="full"
-              type="email"
-              name="email"
-              placeholder="Email address (optional - e.g. john@example.com)"
-              value={formData.email}
-              onChange={handleChange}
-            />
+          <input
+            className="full"
+            type="email"
+            placeholder="Email address"
+            required
+          />
 
-            <input
-              className="full"
-              name="street"
-              placeholder="Street address (e.g. 123 Main Street, Apt 4B)"
-              value={formData.street}
-              onChange={handleChange}
-              required
-            />
+          <input
+            className="full"
+            placeholder="Street address"
+            required
+          />
 
-            <select
-              value={countryCode}
-              onChange={(e) => {
-                setCountryCode(e.target.value);
-                setStateCode("");
-                setCity("");
-              }}
-              required
-            >
-              <option value="">Select Country</option>
-              {countries.map((c) => (
-                <option key={c.isoCode} value={c.isoCode}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={stateCode}
-              onChange={(e) => {
-                setStateCode(e.target.value);
-                setCity("");
-              }}
-              disabled={!countryCode}
-              required
-            >
-              <option value="">Select State</option>
-              {states.map((s) => (
-                <option key={s.isoCode} value={s.isoCode}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              disabled={!stateCode}
-            >
-              <option value="">Select City (optional)</option>
-              {cities.map((ct) => (
-                <option key={ct.name} value={ct.name}>
-                  {ct.name}
-                </option>
-              ))}
-            </select>
-
-            <input 
-              name="zipcode"
-              placeholder="Zipcode (e.g. 400001)"
-              value={formData.zipcode}
-              onChange={handleChange}
-              required 
-            />
-
-            <input
-              className="full"
-              type="tel"
-              name="phone"
-              placeholder="Phone number - max 10 digits (e.g. 9876543210)"
-              value={formData.phone}
-              onChange={handleChange}
-              maxLength={10}
-              pattern="[0-9]*"
-              required
-            />
-          </div>
-
-          {/* 🔥 PLACE ORDER BUTTON 🔥 */}
-          <button 
-            type="submit" 
-            className="place-order-btn"
-            disabled={loading}
+          <select
+            value={countryCode}
+            onChange={(e) => {
+              setCountryCode(e.target.value);
+              setStateCode("");
+              setCity("");
+            }}
+            required
           >
-            {loading ? "PROCESSING..." : "PLACE ORDER"}
-          </button>
-        </form>
+            <option value="">Select Country</option>
+            {countries.map((c) => (
+              <option key={c.isoCode} value={c.isoCode}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={stateCode}
+            onChange={(e) => {
+              setStateCode(e.target.value);
+              setCity("");
+            }}
+            disabled={!countryCode}
+            required
+          >
+            <option value="">Select State</option>
+            {states.map((s) => (
+              <option key={s.isoCode} value={s.isoCode}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            disabled={!stateCode}
+            required
+          >
+            <option value="">Select City</option>
+            {cities.map((ct) => (
+              <option key={ct.name} value={ct.name}>
+                {ct.name}
+              </option>
+            ))}
+          </select>
+
+          <input placeholder="Zipcode" required />
+
+          <input
+            className="full"
+            placeholder="Phone number"
+            required
+          />
+        </div>
       </div>
     </>
   );
