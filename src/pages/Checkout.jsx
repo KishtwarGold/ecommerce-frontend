@@ -23,7 +23,7 @@ const Checkout = () => {
       };
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/orders/create`,
+        `${import.meta.env.VITE_API_URL}/api/payment/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
