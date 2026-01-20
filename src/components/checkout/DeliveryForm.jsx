@@ -23,13 +23,18 @@ const DeliveryForm = ({ onSubmit, loading }) => {
     e.preventDefault();
     
     // Validation
-    if (!formData.firstName || !formData.email || !formData.phone) {
+    if (!formData.firstName || !formData.phone) {
       alert("Please fill all required fields!");
       return;
     }
 
-    if (!countryCode || !stateCode || !city) {
-      alert("Please select Country, State, and City!");
+    if (formData.phone.length > 10) {
+      alert("Phone number must be maximum 10 digits!");
+      return;
+    }
+
+    if (!countryCode || !stateCode) {
+      alert("Please select Country and State!");
       return;
     }
 
@@ -175,14 +180,14 @@ const DeliveryForm = ({ onSubmit, loading }) => {
           <div className="checkout-grid-form">
             <input 
               name="firstName"
-              placeholder="First name" 
+              placeholder="First name (e.g. John)" 
               value={formData.firstName}
               onChange={handleChange}
               required 
             />
             <input 
               name="lastName"
-              placeholder="Last name"
+              placeholder="Last name (e.g. Doe)"
               value={formData.lastName}
               onChange={handleChange}
             />
@@ -191,16 +196,15 @@ const DeliveryForm = ({ onSubmit, loading }) => {
               className="full"
               type="email"
               name="email"
-              placeholder="Email address"
+              placeholder="Email address (optional - e.g. john@example.com)"
               value={formData.email}
               onChange={handleChange}
-              required
             />
 
             <input
               className="full"
               name="street"
-              placeholder="Street address"
+              placeholder="Street address (e.g. 123 Main Street, Apt 4B)"
               value={formData.street}
               onChange={handleChange}
               required
@@ -244,9 +248,8 @@ const DeliveryForm = ({ onSubmit, loading }) => {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               disabled={!stateCode}
-              required
             >
-              <option value="">Select City</option>
+              <option value="">Select City (optional)</option>
               {cities.map((ct) => (
                 <option key={ct.name} value={ct.name}>
                   {ct.name}
@@ -256,7 +259,7 @@ const DeliveryForm = ({ onSubmit, loading }) => {
 
             <input 
               name="zipcode"
-              placeholder="Zipcode"
+              placeholder="Zipcode (e.g. 400001)"
               value={formData.zipcode}
               onChange={handleChange}
               required 
@@ -264,15 +267,18 @@ const DeliveryForm = ({ onSubmit, loading }) => {
 
             <input
               className="full"
+              type="tel"
               name="phone"
-              placeholder="Phone number"
+              placeholder="Phone number - max 10 digits (e.g. 9876543210)"
               value={formData.phone}
               onChange={handleChange}
+              maxLength={10}
+              pattern="[0-9]*"
               required
             />
           </div>
 
-          {/* 🔥 YE HAI TERA BUTTON BHAI! 🔥 */}
+          {/* 🔥 PLACE ORDER BUTTON 🔥 */}
           <button 
             type="submit" 
             className="place-order-btn"
