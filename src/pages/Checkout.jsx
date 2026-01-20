@@ -18,29 +18,51 @@ const Checkout = () => {
 
   const loadCashfreeSDK = () => {
     return new Promise((resolve, reject) => {
+      // Check if already loaded
       if (window.Cashfree) {
+        console.log("✅ Cashfree SDK already loaded");
         resolve(window.Cashfree);
         return;
       }
 
+      // Check if script already exists
+      const existing = document.querySelector('script[src*="cashfree.js"]');
+      if (existing) {
+        existing.addEventListener('load', () => {
+          if (window.Cashfree) {
+            resolve(window.Cashfree);
+          } else {
+            reject(new Error("Cashfree not found after load"));
+          }
+        });
+        return;
+      }
+
+      // Create new script
       const script = document.createElement('script');
       script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-      script.async = true;
+      script.async = false; // ✅ Changed to false for better loading
       
       script.onload = () => {
-        if (window.Cashfree) {
-          console.log("✅ Cashfree SDK loaded");
-          resolve(window.Cashfree);
-        } else {
-          reject(new Error("Cashfree not found"));
-        }
+        console.log("📦 Script loaded, checking Cashfree...");
+        // Wait a bit for Cashfree to be available
+        setTimeout(() => {
+          if (window.Cashfree) {
+            console.log("✅ Cashfree SDK loaded successfully");
+            resolve(window.Cashfree);
+          } else {
+            reject(new Error("Cashfree object not found after script load"));
+          }
+        }, 100);
       };
       
-      script.onerror = () => {
-        reject(new Error("⚠️ Payment system blocked. Please disable ad blocker."));
+      script.onerror = (e) => {
+        console.error("Script load error:", e);
+        reject(new Error("⚠️ Failed to load Cashfree SDK. Check internet connection or disable ad blocker."));
       };
       
       document.head.appendChild(script);
+      console.log("📡 Loading Cashfree SDK...");
     });
   };
 
@@ -129,9 +151,17 @@ const Checkout = () => {
       }
 
       // Initialize Cashfree in PRODUCTION mode
+      console.log("🔧 Initializing Cashfree...", CashfreeSDK);
+      
+      if (!CashfreeSDK || !CashfreeSDK.Cashfree) {
+        throw new Error("Cashfree SDK not properly loaded");
+      }
+      
       const cashfree = await CashfreeSDK.Cashfree.init({
         mode: "production" // ✅ Production mode for live
       });
+      
+      console.log("✅ Cashfree initialized:", cashfree);
 
       // Get payment session - 🔥 GET BOTH sessionId AND orderId
       const paymentData = await getSessionId(formData);
