@@ -14,7 +14,7 @@ export default function ProductInfo({ product }) {
   const incQty = () => setQty((q) => q + 1);
   const decQty = () => setQty((q) => (q > 1 ? q - 1 : 1));
 
-  // ✅ ADD TO CART (NO CHANGE)
+  // ✅ ADD TO CART (AS IT IS)
   const handleAddToCart = () => {
     addToCart({
       id,
@@ -27,8 +27,7 @@ export default function ProductInfo({ product }) {
     });
   };
 
-  // ✅ BUY NOW (ONLY LOGIC CHANGE)
-  // ❌ cart ka koi function use nahi hoga
+  // ✅ BUY NOW (DIRECT CHECKOUT – NO CART DEPENDENCY)
   const handleBuyNow = () => {
     navigate("/checkout", {
       state: {
@@ -42,8 +41,6 @@ export default function ProductInfo({ product }) {
           image,
           qty,
         },
-        subtotal: price * qty,
-        total: price * qty,
       },
     });
   };

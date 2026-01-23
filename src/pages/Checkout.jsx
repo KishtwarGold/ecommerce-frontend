@@ -10,9 +10,24 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, getTotalPrice, clearCart } = useCart();
 
-  const items = state?.items || cartItems;
-  const subtotal = state?.subtotal || getTotalPrice();
-  const total = state?.total || getTotalPrice();
+  // const items = state?.items || cartItems;
+  // const subtotal = state?.subtotal || getTotalPrice();
+  // const total = state?.total || getTotalPrice();
+
+
+  const isBuyNow = Boolean(state?.buyNow && state?.item);
+
+const items = isBuyNow
+  ? [state.item]        // Buy Now → single item ko array banaya
+  : cartItems;          // Normal cart flow
+
+const subtotal = isBuyNow
+  ? state.item.price * state.item.qty
+  : getTotalPrice();
+
+const total = subtotal;
+
+
 
   const [loading, setLoading] = useState(false);
   const [cashfreeReady, setCashfreeReady] = useState(false);
@@ -81,8 +96,14 @@ const Checkout = () => {
 
       if (res?.data?.success) {
         alert("✅ Payment successful! Order placed.");
-        clearCart();
-        navigate('/');
+        // clearCart();
+        // navigate('/');
+
+        if (!isBuyNow) {
+  clearCart();
+}
+navigate('/');
+
       } else {
         alert("❌ Payment verification failed. Please contact support with Order ID: " + orderIdToVerify);
       }
