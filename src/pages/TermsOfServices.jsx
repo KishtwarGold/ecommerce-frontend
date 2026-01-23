@@ -58,10 +58,10 @@ export default function TermsOfService() {
           white-space: nowrap;
         }
 
-        .back-btn:hover {
-          background: #b9120dff;
-          color: #ffffff;
-        }
+        // .back-btn:hover {
+        //   background: #b9120dff;
+        //   color: #ffffff;
+        // }
 
         .header-text {
           flex: 1;
@@ -195,7 +195,7 @@ export default function TermsOfService() {
         {/* Header */}
         <header className="privacy-header">
           <button className="back-btn" onClick={() => navigate(-1)}>
-            ← Back
+           <h1>←</h1> 
           </button>
           <div className="header-text">
             <h1>Terms of Service</h1>

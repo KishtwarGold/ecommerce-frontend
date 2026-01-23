@@ -1,31 +1,32 @@
 import { useEffect, useState } from "react";
+import dpimage from "../assets/dp.jpg";
 
 const reviews = [
   {
     name: "Rohan Das",
     city: "AHMEDABAD",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    image: dpimage,
     text:
       "Maine yahan se premium walnuts order kiye the. Taste fresh tha aur packaging bhi kaafi achi thi. Daily use ke liye perfect product hai.",
   },
   {
     name: "Priya Sharma",
     city: "MUMBAI",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    image: dpimage,
     text:
       "Saffron ki quality really impressive hai. Natural aroma aur colour bilkul authentic lagta hai. Milk aur sweets ke liye best hai.",
   },
   {
     name: "Amit Verma",
     city: "PUNE",
-    image: "https://randomuser.me/api/portraits/men/54.jpg",
+    image: dpimage,
     text:
       "Dry fruits fresh mile aur price bhi reasonable laga. Market ke comparison me better quality experience raha.",
   },
   {
     name: "Sneha Gupta",
     city: "DELHI",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    image: dpimage,
     text:
       "Healthy lifestyle ke liye walnuts aur saffron best choice hai. Products fresh aaye aur delivery bhi time par thi.",
   },

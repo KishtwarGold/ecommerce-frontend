@@ -107,14 +107,14 @@ export default function ProductTabs({ product }) {
           Description
         </div>
 
-        <div
+        {/* <div
           className={`pt-tab ${
             activeTab === "reviews" ? "active" : ""
           }`}
           onClick={() => setActiveTab("reviews")}
         >
           Reviews
-        </div>
+        </div> */}
       </div>
 
       {/* ===============================
@@ -129,11 +129,11 @@ export default function ProductTabs({ product }) {
           </div>
         )}
 
-        {activeTab === "reviews" && (
+        {/* {activeTab === "reviews" && (
           <div className="pt-empty">
             Reviews will be available soon.
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

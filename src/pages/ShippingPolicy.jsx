@@ -57,11 +57,6 @@ export default function ShippingPolicy() {
           white-space: nowrap;
         }
 
-        .back-btn:hover {
-          background: #b9120dff;
-          color: #ffffff;
-        }
-
         .header-text {
           flex: 1;
           text-align: center;
@@ -184,7 +179,7 @@ export default function ShippingPolicy() {
         {/* Header */}
         <header className="privacy-header">
           <button className="back-btn" onClick={() => navigate(-1)}>
-            ← Back
+            <h1>←</h1>
           </button>
           <div className="header-text">
             <h1>Shipping Policy</h1>

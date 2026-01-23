@@ -48,11 +48,6 @@ export default function PrivacyPolicy() {
           white-space: nowrap;
         }
 
-        .back-btn:hover {
-          background: #b9120dff;
-          color: #ffffff;
-        }
-
         .header-text {
           flex: 1;
           text-align: center;
@@ -182,7 +177,7 @@ export default function PrivacyPolicy() {
         <header className="privacy-header">
           {/* ✅ BACK BUTTON */}
           <button className="back-btn" onClick={() => navigate(-1)}>
-            ← Back
+            <h1>←</h1>
           </button>
 
           <div className="header-text">
