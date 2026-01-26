@@ -32,6 +32,8 @@ const reviews = [
   },
 ];
 
+const GAP = 24;
+
 const CustomerLove = () => {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(3);
@@ -70,12 +72,9 @@ const CustomerLove = () => {
         }
 
         .customer-love {
-          padding: 40px 0 20px; /* 🔥 bottom gap reduced */
+          padding: 40px 0 20px;
           background: #f8f7fb;
         }
-
-        /* ❌ REMOVED local .container override
-           Bootstrap default container hi use hoga */
 
         .title {
           text-align: center;
@@ -83,6 +82,7 @@ const CustomerLove = () => {
           letter-spacing: 2px;
           color: #6b7280;
         }
+
         .title span {
           color: var(--brand-red);
           font-weight: 600;
@@ -102,12 +102,12 @@ const CustomerLove = () => {
 
         .track {
           display: flex;
-          gap: 24px;
+          gap: ${GAP}px;
           transition: transform 0.6s ease;
         }
 
         .card {
-          flex: 0 0 calc((100% - ${(visible - 1) * 24}px) / ${visible});
+          min-width: calc((100% - ${(visible - 1) * GAP}px) / ${visible});
           background: #ffffff;
           padding: 26px 24px 24px;
           border-radius: 20px;
@@ -199,7 +199,9 @@ const CustomerLove = () => {
             <div
               className="track"
               style={{
-                transform: `translateX(-${index * (100 / visible)}%)`,
+                transform: `translateX(calc(-${index * 100}% - ${
+                  index * GAP
+                }px))`,
               }}
             >
               {reviews.map((item, i) => (

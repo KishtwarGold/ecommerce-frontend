@@ -1,11 +1,8 @@
-// import giftbox from "../assets/giftbox.jpeg";
-import saffronimg1 from "../assets/1st.jpeg";
-import saffronimg2 from "../assets/2nd.jpeg";
-import saffronimg3 from "../assets/3rd.jpg";
-import saffronimg4 from "../assets/4th.jpg";
 import walnutimg from "../assets/walnut.jpg";
 import walnutimg2 from "../assets/walnut2.png";
-
+import onekg from "../assets/1kg.jpeg";
+import image2 from "../assets/2ndsaffron.jpeg";
+import image3 from "../assets/3rdsaffron.jpeg";
 export const products = [
   // ======================
   // SAFFRON PRODUCTS
@@ -17,8 +14,8 @@ export const products = [
     productType: "Saffron",
     category: "Premium Collection",
     weight: "1g",
-    price:5,
-    image: saffronimg4,
+    price: 650,
+    image: onekg,
     description: [
       "A total of 1 gram of premium saffron presented in an elegant gift box, making it a perfect choice for festive and special occasions.",
       "Carefully curated for gifting, this pack combines luxurious packaging with superior saffron quality, ideal for weddings, celebrations, and premium gifting."
@@ -32,7 +29,7 @@ export const products = [
     category: "Premium Collection",
     weight: "2g",
     price: 1200,
-    image: saffronimg3,
+    image: image2,
     description: [
       "This pack includes 2 grams of premium saffron, ideal for light usage or first-time buyers.",
       "Designed for individual users who use saffron occasionally, it maintains authentic taste, aroma, and freshness in a compact and convenient size."
@@ -46,7 +43,7 @@ export const products = [
     category: "Exclusive Collection",
     weight: "5g",
     price: 2800,
-    image: saffronimg2,
+    image: image3,
     description: [
       "This pack contains a total of 5 grams of high-quality saffron, perfectly measured for moderate household usage.",
       "Designed for users who use saffron occasionally, it delivers authentic aroma, vibrant color, and consistent quality in every strand. Available to order pan India."
@@ -60,7 +57,7 @@ export const products = [
     category: "Exclusive Collection",
     weight: "10g",
     price: 5100,
-    image: saffronimg1,
+    image: onekg,
     description: [
       "A total of 10 grams of premium-grade saffron sourced from our Exclusive Collection, known for its deep color and rich aroma.",
       "Carefully packed to preserve freshness and potency, this pack is ideal for regular home use, cooking, wellness drinks, and traditional recipes. Available to order across India."
