@@ -934,11 +934,11 @@ const NAVBAR_HEIGHT = 65;
 const slides = [
   {
     title: "A Golden Essence for Every Day",
-    image: "/src/assets/SaffronPoster.jpeg",
+    image: "/src/assets/poster.jpeg",
   },
   {
     title: "A Golden Essence for Every Day",
-    image: "/src/assets/SaffronPoster.jpeg",
+    image: "/src/assets/poster.jpeg",
   },
 ];
 
@@ -1049,10 +1049,6 @@ const Hero = () => {
           display: block;
           transition: transform 0.6s ease;
         }
-
-        // .hero-right:hover img {
-        //   transform: scale(1.03);
-        // }
 
         /* ARROWS (Hidden by default on desktop) */
         .arrow {
