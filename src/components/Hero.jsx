@@ -934,7 +934,7 @@ const NAVBAR_HEIGHT = 65;
 const slides = [
   {
     title: "A Golden Essence for Every Day",
-    image: "/src/assets/saffronPoster.jpeg",
+    image: "/src/assets/SaffronPoster.jpeg",
   },
   {
     title: "A Golden Essence for Every Day",

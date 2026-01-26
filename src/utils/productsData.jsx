@@ -1,8 +1,9 @@
 import walnutimg from "../assets/walnut.jpg";
 import walnutimg2 from "../assets/walnut2.png";
-import onekg from "../assets/1kg.jpeg";
+import image1 from "../assets/1kg.jpeg";
 import image2 from "../assets/2ndsaffron.jpeg";
 import image3 from "../assets/3rdsaffron.jpeg";
+
 export const products = [
   // ======================
   // SAFFRON PRODUCTS
@@ -14,8 +15,8 @@ export const products = [
     productType: "Saffron",
     category: "Premium Collection",
     weight: "1g",
-    price: 650,
-    image: onekg,
+    price:5,
+    image: image1,
     description: [
       "A total of 1 gram of premium saffron presented in an elegant gift box, making it a perfect choice for festive and special occasions.",
       "Carefully curated for gifting, this pack combines luxurious packaging with superior saffron quality, ideal for weddings, celebrations, and premium gifting."
@@ -57,7 +58,7 @@ export const products = [
     category: "Exclusive Collection",
     weight: "10g",
     price: 5100,
-    image: onekg,
+    image: image1,
     description: [
       "A total of 10 grams of premium-grade saffron sourced from our Exclusive Collection, known for its deep color and rich aroma.",
       "Carefully packed to preserve freshness and potency, this pack is ideal for regular home use, cooking, wellness drinks, and traditional recipes. Available to order across India."
