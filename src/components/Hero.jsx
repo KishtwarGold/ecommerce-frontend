@@ -191,13 +191,13 @@ const Hero = () => {
           }
 
           .hero-left h1 {
-            font-size: 24px;
+            font-size: 23px;
             font-weight: 540;
             margin: 0;
             line-height: 1.35;
             color: #8f0d08;
             max-width: 68%;
-            margin-left: 10px;
+            margin-left: 8px;
           }
 
           .hero-left button {
