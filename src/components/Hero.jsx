@@ -191,8 +191,8 @@ const Hero = () => {
           }
 
           .hero-left h1 {
-            font-size: 23px;
-            font-weight: 540;
+            font-size: 22px;
+            font-weight: 530;
             margin: 0;
             line-height: 1.35;
             color: #8f0d08;
@@ -208,7 +208,7 @@ const Hero = () => {
             background: linear-gradient(135deg, #b1120b, #d62828);
             box-shadow: 0 6px 14px rgba(177, 18, 11, 0.28);
             white-space: nowrap;
-            margin-right: 10px;
+            margin-right: 8px;
           }
 
           .hero-right {
