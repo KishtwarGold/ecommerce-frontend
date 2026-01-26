@@ -1,6 +1,6 @@
 import walnutimg from "../assets/walnut.jpg";
 import walnutimg2 from "../assets/walnut2.png";
-import image1 from "../assets/1kg.jpeg";
+import image1 from "../assets/1KG.jpeg";
 import image2 from "../assets/2ndsaffron.jpeg";
 import image3 from "../assets/3rdsaffron.jpeg";
 
