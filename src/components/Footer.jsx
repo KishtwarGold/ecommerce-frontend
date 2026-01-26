@@ -165,7 +165,7 @@ const Footer = () => {
         }
 
         .footer-bottom p {
-          margin-left: 50px;
+          margin-left: 30px;
         }
 
         // .footer-bottom a {
