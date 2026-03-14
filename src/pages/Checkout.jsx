@@ -5,32 +5,112 @@ import axios from "axios";
 import DeliveryForm from "../components/checkout/DeliveryForm";
 import CartTotals from "../components/checkout/CartTotals";
 
+// ✅ Success Modal Component
+const SuccessModal = ({ onClose }) => (
+  <>
+    <style>{`
+      .success-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        padding: 20px;
+      }
+      .success-box {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 380px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes popIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      .success-icon-wrap {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #f0fdf4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+      .success-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #111;
+        margin: 0 0 8px;
+      }
+      .success-subtitle {
+        font-size: 15px;
+        color: #555;
+        margin: 0 0 6px;
+      }
+      .success-note {
+        font-size: 13px;
+        color: #999;
+        margin: 0 0 28px;
+      }
+      .success-btn {
+        width: 100%;
+        padding: 14px;
+        background: #16a34a;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .success-btn:hover { background: #15803d; }
+    `}</style>
+    <div className="success-overlay">
+      <div className="success-box">
+        <div className="success-icon-wrap">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <p className="success-title">Payment Successful!</p>
+        <p className="success-subtitle">Your order has been placed.</p>
+        <p className="success-note">You'll receive a confirmation shortly.</p>
+        <button className="success-btn" onClick={onClose}>
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+  </>
+);
+
 const Checkout = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { cartItems, getTotalPrice, clearCart } = useCart();
 
-  // const items = state?.items || cartItems;
-  // const subtotal = state?.subtotal || getTotalPrice();
-  // const total = state?.total || getTotalPrice();
-
-
   const isBuyNow = Boolean(state?.buyNow && state?.item);
 
-const items = isBuyNow
-  ? [state.item]        // Buy Now → single item ko array banaya
-  : cartItems;          // Normal cart flow
+  const items = isBuyNow
+    ? [state.item]
+    : cartItems;
 
-const subtotal = isBuyNow
-  ? state.item.price * state.item.qty
-  : getTotalPrice();
+  const subtotal = isBuyNow
+    ? state.item.price * state.item.qty
+    : getTotalPrice();
 
-const total = subtotal;
-
-
+  const total = subtotal;
 
   const [loading, setLoading] = useState(false);
   const [cashfreeReady, setCashfreeReady] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // ✅ Modal state
 
   // ✅ Preload Cashfree SDK on component mount
   useEffect(() => {
@@ -62,7 +142,7 @@ const total = subtotal;
           items: items
         },
         {
-          timeout: 10000, // 10 second timeout
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           }
@@ -95,15 +175,11 @@ const total = subtotal;
       );
 
       if (res?.data?.success) {
-        alert("✅ Payment successful! Order placed.");
-        // clearCart();
-        // navigate('/');
-
+        // ✅ alert() hata ke modal dikhao
         if (!isBuyNow) {
-  clearCart();
-}
-navigate('/');
-
+          clearCart();
+        }
+        setShowSuccess(true); // modal open karo
       } else {
         alert("❌ Payment verification failed. Please contact support with Order ID: " + orderIdToVerify);
       }
@@ -113,9 +189,14 @@ navigate('/');
     }
   };
 
+  // ✅ Modal band hone pe navigate karo
+  const handleSuccessClose = () => {
+    setShowSuccess(false);
+    navigate('/');
+  };
+
   const handleFinalOrder = async (formData) => {
     try {
-      // Validation
       if (items.length === 0) {
         alert("Cart is empty!");
         return;
@@ -126,7 +207,6 @@ navigate('/');
         return;
       }
 
-      // Check Cashfree
       if (!cashfreeReady) {
         alert("⏳ Payment system is loading. Please wait a moment and try again.");
         return;
@@ -135,7 +215,6 @@ navigate('/');
       setLoading(true);
       console.log("🛒 Processing order...", { amount: total });
 
-      // Get payment session
       const paymentData = await getSessionId(formData);
       
       if (!paymentData?.sessionId) {
@@ -145,12 +224,10 @@ navigate('/');
       const { sessionId, orderId } = paymentData;
       console.log("💳 Opening payment for order:", orderId);
 
-      // Initialize Cashfree
       const cashfree = window.Cashfree({
         mode: import.meta.env.VITE_CASHFREE_ENV === "PROD" ? "production" : "sandbox"
       });
 
-      // Payment options - using _self for better compatibility
       const checkoutOptions = {
         paymentSessionId: sessionId,
         redirectTarget: "_modal"
@@ -158,7 +235,6 @@ navigate('/');
 
       console.log("🚀 Opening payment modal...");
 
-      // Open payment
       cashfree.checkout(checkoutOptions).then((result) => {
         console.log("💳 Payment result:", result);
         
@@ -243,6 +319,9 @@ navigate('/');
           }
         }
       `}</style>
+
+      {/* ✅ Success Modal */}
+      {showSuccess && <SuccessModal onClose={handleSuccessClose} />}
 
       <div className="checkout-bg">
         {!cashfreeReady && (
