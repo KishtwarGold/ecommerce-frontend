@@ -192,7 +192,7 @@ const Checkout = () => {
   // ✅ Modal band hone pe navigate karo
   const handleSuccessClose = () => {
     setShowSuccess(false);
-    navigate('/');
+    navigate('/collection');
   };
 
   const handleFinalOrder = async (formData) => {
