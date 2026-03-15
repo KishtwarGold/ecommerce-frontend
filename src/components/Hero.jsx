@@ -270,6 +270,22 @@ const Hero = () => {
           .arrow {
             display: none !important;
           }
+
+          /* ✅ Smaller dots on mobile */
+          .hero-dots {
+            bottom: 8px;
+            gap: 5px;
+          }
+
+          .hero-dot {
+            width: 5px;
+            height: 5px;
+          }
+
+          .hero-dot.active {
+            width: 14px;
+            height: 5px;
+          }
         }
       `}</style>
     </>
