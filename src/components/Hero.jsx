@@ -1,19 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import saffronPoster from "../assets/SaffronPoster.jpeg";
+import Poster1 from "../assets/Poster1.png";
+import Poster2 from "../assets/Poster2.png";
+import Poster3 from "../assets/Poster3.png";
+import Poster4 from "../assets/Poster4.png";
 
 const BRAND_COLOR = "#b1120b";
-const NAVBAR_HEIGHT = 65;
+const NAVBAR_HEIGHT = 60;
 
 const slides = [
   {
     title: "A Golden Essence for Every Day",
-    image: saffronPoster,
+    image: Poster1,
   },
   {
     title: "A Golden Essence for Every Day",
-    image: saffronPoster,
+    image: Poster2,
+  },
+  {
+    title: "A Golden Essence for Every Day",
+    image: Poster3,
+  },
+  {
+    title: "A Golden Essence for Every Day",
+    image: Poster4,
   },
 ];
 
