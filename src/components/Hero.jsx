@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Poster1 from "../assets/Poster1.png";
@@ -10,27 +10,20 @@ const BRAND_COLOR = "#b1120b";
 const NAVBAR_HEIGHT = 60;
 
 const slides = [
-  {
-    title: "A Golden Essence for Every Day",
-    image: Poster1,
-  },
-  {
-    title: "A Golden Essence for Every Day",
-    image: Poster2,
-  },
-  {
-    title: "A Golden Essence for Every Day",
-    image: Poster3,
-  },
-  {
-    title: "A Golden Essence for Every Day",
-    image: Poster4,
-  },
+  { title: "A Golden Essence for Every Day", image: Poster1 },
+  { title: "A Golden Essence for Every Day", image: Poster2 },
+  { title: "A Golden Essence for Every Day", image: Poster3 },
+  { title: "A Golden Essence for Every Day", image: Poster4 },
 ];
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
   const navigate = useNavigate();
+
+  // ✅ Touch swipe state
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+  const SWIPE_THRESHOLD = 50; // minimum px to count as swipe
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -39,10 +32,29 @@ const Hero = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const prev = () =>
-    setCurrent((p) => (p === 0 ? slides.length - 1 : p - 1));
-  const next = () =>
-    setCurrent((p) => (p + 1) % slides.length);
+  const prev = () => setCurrent((p) => (p === 0 ? slides.length - 1 : p - 1));
+  const next = () => setCurrent((p) => (p + 1) % slides.length);
+
+  // ✅ Touch handlers
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) >= SWIPE_THRESHOLD) {
+      if (diff > 0) next(); // swipe left → next
+      else prev();          // swipe right → prev
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   return (
     <>
@@ -50,29 +62,39 @@ const Hero = () => {
         {/* LEFT – TEXT */}
         <div className="hero-left">
           <h1 className="hero-title">
-            <span className="desktop-text">
-              {slides[current].title}
-            </span>
-            <span className="mobile-text">
-              Pure & Premium
-            </span>
+            <span className="desktop-text">{slides[current].title}</span>
+            <span className="mobile-text">Pure & Premium</span>
           </h1>
-
-          <button onClick={() => navigate("/collection")}>
-            SHOP NOW
-          </button>
+          <button onClick={() => navigate("/collection")}>SHOP NOW</button>
         </div>
 
-        {/* RIGHT – IMAGE */}
-        <div className="hero-right">
+        {/* RIGHT – IMAGE with swipe support */}
+        <div
+          className="hero-right"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <img src={slides[current].image} alt="hero" />
 
+          {/* Arrows — hidden on mobile via CSS */}
           <button className="arrow left" onClick={prev}>
             <FaChevronLeft />
           </button>
           <button className="arrow right" onClick={next}>
             <FaChevronRight />
           </button>
+
+          {/* Dots */}
+          <div className="hero-dots">
+            {slides.map((_, i) => (
+              <span
+                key={i}
+                className={`hero-dot ${i === current ? "active" : ""}`}
+                onClick={() => setCurrent(i)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -102,13 +124,8 @@ const Hero = () => {
           font-family: serif;
         }
 
-        .desktop-text {
-          display: inline;
-        }
-
-        .mobile-text {
-          display: none;
-        }
+        .desktop-text { display: inline; }
+        .mobile-text  { display: none; }
 
         .hero-left button {
           width: fit-content;
@@ -134,9 +151,11 @@ const Hero = () => {
           object-fit: contain;
           display: block;
           transition: transform 0.6s ease;
+          user-select: none;
+          -webkit-user-drag: none;
         }
 
-        /* ARROWS (Hidden by default on desktop) */
+        /* ARROWS — desktop only */
         .arrow {
           position: absolute;
           top: 50%;
@@ -151,33 +170,49 @@ const Hero = () => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-
           opacity: 0;
           pointer-events: none;
           transition: all 0.35s ease;
+          z-index: 10;
         }
 
-        .arrow.left {
-          left: 8px;
-        }
+        .arrow.left  { left: 8px; }
+        .arrow.right { right: 8px; }
 
-        .arrow.right {
-          right: 8px;
-        }
-
-        /* SHOW arrows on hover */
         .hero-right:hover .arrow {
           opacity: 1;
           pointer-events: auto;
           transform: translateY(-50%) scale(1);
         }
 
-        .hero-right:hover .arrow.left {
-          left: 16px;
+        .hero-right:hover .arrow.left  { left: 16px; }
+        .hero-right:hover .arrow.right { right: 16px; }
+
+        /* DOTS */
+        .hero-dots {
+          position: absolute;
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 7px;
+          z-index: 10;
         }
 
-        .hero-right:hover .arrow.right {
-          right: 16px;
+        .hero-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.5);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-block;
+        }
+
+        .hero-dot.active {
+          background: white;
+          width: 22px;
+          border-radius: 4px;
         }
 
         /* ================= MOBILE ================= */
@@ -191,12 +226,10 @@ const Hero = () => {
             width: 100%;
             padding: 14px 16px;
             order: 2;
-
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-
             border-radius: 14px;
             margin: 12px;
           }
@@ -225,26 +258,17 @@ const Hero = () => {
           .hero-right {
             width: 100%;
             order: 1;
+            touch-action: pan-y; /* ✅ vertical scroll allow, horizontal swipe capture */
           }
 
-          .hero-right img {
-            height: auto;
-          }
+          .hero-right img { height: auto; }
 
-          /* Mobile text swap */
-          .desktop-text {
-            display: none;
-          }
+          .desktop-text { display: none; }
+          .mobile-text  { display: inline; }
 
-          .mobile-text {
-            display: inline;
-          }
-
-          /* Arrows always visible on mobile */
+          /* ✅ Arrows completely hidden on mobile */
           .arrow {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(-50%) scale(1);
+            display: none !important;
           }
         }
       `}</style>
