@@ -26,7 +26,7 @@ const KongdoonDifference = () => {
         }
 
         .diff-sub{
-          font-size:16px;
+          font-size:18px;
           text-align:center;
           max-width:680px;
           margin:0 auto 60px;
@@ -118,6 +118,14 @@ const KongdoonDifference = () => {
 
         @media(max-width:900px){
 
+          .diff-title{
+            font-size:28px;
+          }
+
+          .diff-sub{
+            font-size:15px;
+          }
+
           .diff-grid{
             grid-template-columns:1fr;
           }
@@ -133,7 +141,7 @@ const KongdoonDifference = () => {
           }
 
           .feature{
-            font-size:16.8px;
+            font-size:16px;
         }
         }
 
