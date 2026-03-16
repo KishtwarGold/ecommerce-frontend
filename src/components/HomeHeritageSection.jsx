@@ -135,7 +135,7 @@ const HomeHeritageSection = () => {
 
               <Link to="/about">
                 <button className="learn-btn">
-                  LEARN MORE ABOUT US
+                  Know more about Kishtwar
                 </button>
               </Link>
             </div>
