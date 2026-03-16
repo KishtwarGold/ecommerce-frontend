@@ -118,6 +118,10 @@ const KongdoonDifference = () => {
 
         @media(max-width:900px){
 
+          .diff-section{
+            padding:23px 16px;
+          }
+
           .diff-title{
             font-size:28px;
           }
