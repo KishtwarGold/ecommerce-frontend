@@ -145,7 +145,7 @@ const KongdoonDifference = () => {
           }
 
           .feature{
-            font-size:14px;
+            font-size:15px;
         }
         }
 
