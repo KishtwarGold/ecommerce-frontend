@@ -26,7 +26,7 @@ const KongdoonDifference = () => {
         }
 
         .diff-sub{
-          font-size:18px;
+          font-size:16px;
           text-align:center;
           max-width:680px;
           margin:0 auto 60px;
