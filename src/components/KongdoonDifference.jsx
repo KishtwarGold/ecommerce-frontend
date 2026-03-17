@@ -43,6 +43,13 @@ const KongdoonDifference = () => {
           align-items:center;
         }
 
+        /* 🔥 MODERN VS ANIMATION (no glow) */
+        @keyframes vsModern {
+          0% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-6px) rotate(3deg); }
+          100% { transform: translateY(0px) rotate(0deg); }
+        }
+
         .vs-badge{
           display:flex;
           align-items:center;
@@ -56,6 +63,9 @@ const KongdoonDifference = () => {
           font-size:22px;
           margin:auto;
           box-shadow:0 10px 25px rgba(0,0,0,0.15);
+
+          /* ✨ clean animation */
+          animation: vsModern 2s ease-in-out infinite;
         }
 
         .diff-card{
@@ -146,7 +156,7 @@ const KongdoonDifference = () => {
 
           .feature{
             font-size:15px;
-        }
+          }
         }
 
       `}</style>
@@ -166,7 +176,6 @@ const KongdoonDifference = () => {
 
         <div className="diff-grid">
 
-          {/* Kongdoon Card */}
           <div className="diff-card kongdoon">
 
             <div className="premium-badge">
@@ -204,12 +213,10 @@ const KongdoonDifference = () => {
 
           </div>
 
-          {/* VS Badge */}
           <div className="vs-badge">
             VS
           </div>
 
-          {/* Ordinary Card */}
           <div className="diff-card ordinary">
 
             <div className="card-title">
