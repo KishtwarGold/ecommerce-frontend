@@ -21,7 +21,7 @@ export default function RelatedProducts({ currentProduct }) {
            SECTION
         =============================== */
         .rp-section {
-          margin-top: 140px;
+          margin-top: 90px;
         }
 
         /* ===============================
@@ -81,6 +81,10 @@ export default function RelatedProducts({ currentProduct }) {
         }
 
         @media (max-width: 640px) {
+        .rp-section {
+          margin-top: 80px;
+        }
+
           .rp-title {
             font-size: 24px;
           }

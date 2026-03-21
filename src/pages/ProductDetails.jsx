@@ -37,8 +37,8 @@ export default function ProductDetails() {
       <style>{`
         .pd-page {
           background: linear-gradient(180deg, #f8fafc, #ffffff);
-          padding-top: 140px;
-          padding-bottom: 120px;
+          padding-top: 100px;
+          padding-bottom: 100px;
         }
 
         .pd-container {
@@ -52,8 +52,8 @@ export default function ProductDetails() {
         }
 
         .pd-tabs-wrapper {
-          max-width: 1200px;
-          margin: 90px auto 0;
+          max-width: 1080px;
+          margin: 50px auto 0;
           padding: 0 20px;
         }
 
@@ -64,7 +64,7 @@ export default function ProductDetails() {
           }
 
           .pd-tabs-wrapper {
-            margin-top: 70px;
+            margin-top: 17px;
           }
         }
       `}</style>

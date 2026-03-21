@@ -10,7 +10,6 @@ export default function ProductTabs({ product }) {
       <style>{`
         :root {
           --brand-red: #b11212;
-          --brand-red-soft: #fdecec;
           --text-dark: #1f2937;
           --text-muted: #6b7280;
         }
@@ -22,7 +21,8 @@ export default function ProductTabs({ product }) {
           display: flex;
           gap: 40px;
           border-bottom: 1px solid #e5e7eb;
-          margin-bottom: 28px;
+          margin-bottom: 16px;
+          margin-top: 0;
         }
 
         .pt-tab {
@@ -50,79 +50,69 @@ export default function ProductTabs({ product }) {
         }
 
         /* ===============================
-           CONTENT CARD (RESTORED)
+           CONTENT AREA (no card)
         =============================== */
         .pt-content {
-          background: #ffffff;
-          border-radius: 22px;
-          padding: 36px 40px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.06);
-        }
-
-        .pt-desc {
-          max-width: 900px;
-          font-size: 15px;
-          line-height: 1.9;
-          color: #475569;
-        }
-
-        .pt-desc p {
-          margin-bottom: 18px;
+          background: transparent;
+          padding: 0 4px;
         }
 
         /* ===============================
-           EMPTY REVIEWS STATE
+           DESCRIPTION SECTION
         =============================== */
-        .pt-empty {
-          text-align: center;
-          padding: 40px 20px;
-          color: #94a3b8;
-          font-size: 14px;
+        .pt-desc-heading {
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--brand-red);
+          margin: 0 0 14px 0;
+          padding-bottom: 0;
+        }
+
+        .pt-desc-body {
+          font-size: 16px;
+          line-height: 1.85;
+          color: #374151;
+        }
+
+        .pt-desc-body p {
+          margin: 0 0 14px 0;
+        }
+
+        .pt-desc-body p:last-child {
+          margin-bottom: 0;
         }
 
         /* ===============================
            MOBILE
         =============================== */
         @media (max-width: 640px) {
-          .pt-content {
-            padding: 28px 22px;
-          }
-
           .pt-tabs {
             gap: 24px;
           }
         }
       `}</style>
 
-      {/* ===============================
-          TABS HEADER
-      =============================== */}
+      {/* TABS HEADER */}
       <div className="pt-tabs">
         <div
-          className={`pt-tab ${
-            activeTab === "description" ? "active" : ""
-          }`}
+          className={`pt-tab ${activeTab === "description" ? "active" : ""}`}
           onClick={() => setActiveTab("description")}
         >
           Description
         </div>
 
         {/* <div
-          className={`pt-tab ${
-            activeTab === "reviews" ? "active" : ""
-          }`}
+          className={`pt-tab ${activeTab === "reviews" ? "active" : ""}`}
           onClick={() => setActiveTab("reviews")}
         >
           Reviews
         </div> */}
       </div>
 
-      {/* ===============================
-          TAB CONTENT (CARD)
-      =============================== */}
+      {/* TAB CONTENT */}
       <div className="pt-content">
         {activeTab === "description" && (
-          <div className="pt-desc">
+          <div className="pt-desc-body">
             {product.description?.map((text, index) => (
               <p key={index}>{text}</p>
             ))}
@@ -130,7 +120,7 @@ export default function ProductTabs({ product }) {
         )}
 
         {/* {activeTab === "reviews" && (
-          <div className="pt-empty">
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "#94a3b8", fontSize: "14px" }}>
             Reviews will be available soon.
           </div>
         )} */}

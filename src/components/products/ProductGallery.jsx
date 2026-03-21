@@ -4,7 +4,7 @@ export default function ProductGallery({ image }) {
   return (
     <>
       <style>{`
-        /* PURE IMAGE – NO CARD, NO SHADOW, NO BACKGROUND */
+        /* ── DESKTOP / TABLET (≥ 768px) — original ── */
         .pg-hero-wrapper {
           width: 100%;
           max-width: 520px;
@@ -15,12 +15,9 @@ export default function ProductGallery({ image }) {
         .pg-hero-image {
           width: 100%;
           height: 420px;
-
-          /* important for walnuts + saffron */
-          object-fit: contain;
-
-          /* REMOVE CARD FEEL COMPLETELY */
-          border-radius: 0;
+          object-fit: cover;
+          object-position: center;
+          border-radius: 20px;
           box-shadow: none;
           background: transparent;
           display: block;
@@ -32,9 +29,20 @@ export default function ProductGallery({ image }) {
           }
         }
 
-        @media (max-width: 640px) {
+        /* ── MOBILE (≤ 767px) — cover + rounded ── */
+        @media (max-width: 767px) {
+          .pg-hero-wrapper {
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+          }
+
           .pg-hero-image {
-            height: 300px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
           }
         }
       `}</style>
