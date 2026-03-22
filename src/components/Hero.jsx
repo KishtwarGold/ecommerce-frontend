@@ -222,16 +222,20 @@ const Hero = () => {
             padding-top: ${NAVBAR_HEIGHT}px;
           }
 
+          // .hero-left {
+          //   width: 100%;
+          //   padding: 14px 16px;
+          //   order: 2;
+          //   display: flex;
+          //   flex-direction: row;
+          //   align-items: center;
+          //   justify-content: space-between;
+          //   border-radius: 14px;
+          //   margin: 12px;
+          // }
+
           .hero-left {
-            width: 100%;
-            padding: 14px 16px;
-            order: 2;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 14px;
-            margin: 12px;
+            display: none !important; 
           }
 
           .hero-left h1 {
